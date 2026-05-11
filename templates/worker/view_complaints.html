@@ -1,0 +1,26 @@
+{% extends 'worker/worker_dashboard.html' %}
+{% block content %}
+<table class="table table-hover">
+    <tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Complaints</th>
+        <th>Reply</th>
+
+    </tr>
+    {% for i in data %}
+    <tr>
+        <td>{{i.date}}</td>
+        <td>{{i.name}}</td>
+        <td>{{i.complaint}}</td>
+        <td>
+            {% if i.reply == None %}
+            <p class="text-primary">Pending</p>
+            {% else %}
+            <p>{{i.reply}}</p>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

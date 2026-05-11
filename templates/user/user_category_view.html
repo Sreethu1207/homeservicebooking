@@ -1,0 +1,15 @@
+{% extends 'user/user_dashboard.html' %}
+{% block content %}
+
+<div class="row">
+  {% for i in data %}
+  <div class="col-md-12  mb-2">
+    <div class="card h-100">
+      <div class="card-body bg-info">
+        <h5 class="card-title">{{ i.category }}</h5>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

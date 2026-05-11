@@ -1,0 +1,42 @@
+{% extends 'user/user_dashboard.html' %}
+{% block content %}
+<table class="table table-hover">
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Worker Name</th>
+        <th>Category</th>
+        <th>Payment</th>
+        <th>Contact</th>
+        <th>Status</th>
+    </tr>
+    {% for i in data %}
+    <tr>
+        <td>{{i.availability.date}}</td>
+        <td>{{i.availability.time}}</td>
+        <td>{{i.worker.name}}</td>
+        <td>{{i.worker.category}}</td>
+        <td>{{i.worker.payment}}</td>
+        <td>{{i.worker.contact}}</td>
+        <td>
+            {% if i.appointment_status == 0 %}
+            <a href="{% url 'cancel_appointment' i.id%}"><button class="btn btn-danger">Cancel</button></a>
+            {% elif i.appointment_status == 1 %}
+            {% if i.work_status == False %}
+            <p class="text-primary">Approved</p>
+            {% else %}
+            <p class="text-primary">Work completed</p>
+            {% endif %}
+            {% elif i.appointment_status == 2 %}
+            <p class="text-danger">Rejected</p>
+            {% elif i.appointment_status == 3 %}
+            <p class="text-danger">Completed</p>
+            {% endif %}
+        </td>
+        <td>
+
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

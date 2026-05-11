@@ -1,0 +1,21 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% block content %}
+<table class="table table-hover">
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Client</th>
+        <th>Contact</th>
+        <th>Payment</th>
+    </tr>
+    {% for i in data %}
+    <tr>
+        <td>{{i.availability.date}}</td>
+        <td>{{i.availability.time}}</td>
+        <td>{{i.user_profile.name}}</td>
+        <td>{{i.user_profile.contact}}</td>
+        <td>{{i.worker.payment}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

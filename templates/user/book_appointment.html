@@ -1,0 +1,46 @@
+{% extends 'user/user_dashboard.html' %}
+{% block content %}
+<div class="col-sm-12 col-xl-6 mx-5">
+    <h5> Book your service</h5>
+<form method="post">
+    {% csrf_token %}
+        <div class="mb-3">
+        <label for="BookingDate" class="form-label">Booking Date:</label>
+        <input type="text" class="form-control" id="BookingDate" value="{{availability.date}}" name="booking_date" readonly>
+    </div>
+    <div class="mb-3">
+        <label for="booking_time" class="form-label">Booking Time:</label>
+        <input type="text" class="form-control" id="booking_time" value="{{availability.time}}"  name="booking_time" readonly>
+    </div>
+    <div class="mb-3">
+        <label for="WorkerName" class="form-label">Worker Name:</label>
+        <input type="text" class="form-control" id="WorkerName" value="{{worker.name}}" name="worker_name" readonly>
+    </div>
+    <div class="mb-3">
+        <label for="Category" class="form-label">Category:</label>
+        <input type="text" class="form-control" id="Category" value="{{worker.category}}" name="category" readonly>
+    </div>
+    <div class="mb-3">
+        <label for="Address" class="form-label">Address:</label>
+        <textarea class="form-control" id="Address" name="address" readonly>{{worker.address}}</textarea>
+    </div>
+    <div class="mb-3">
+        <label for="Contact" class="form-label">Contact:</label>
+        <input type="text" class="form-control" id="Contact" value="{{worker.contact}}" name="contact" readonly>
+    </div>
+
+    <div class="mb-3">
+        <label for="payment" class="form-label">Payment:</label>
+        <input type="text" class="form-control" id="payment" value="{{worker.payment}}"  name="payment" readonly>
+    </div>
+    <div>
+        <a><button type="submit" class="btn btn-outline-primary">Book Now</button></a>
+    </div>
+     {% for message in messages %}
+    <div class="alert alert-primary" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+</form>
+</div>
+{% endblock %}

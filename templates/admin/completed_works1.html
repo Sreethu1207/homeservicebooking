@@ -1,0 +1,21 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% block content %}
+<div class="row row-cols-1 row-cols-md-1 g-4">
+  {% for i in data %}
+  <div class="col">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title text-primary">{{ i.name }}</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">
+          Category: {{ i.category }}
+        </h6>
+        <p class="card-text">Contact: {{ i.contact }}</p>
+          <a href="{% url 'list_completed_work' i.id%}">
+              <button class="btn btn-primary">Completed Works</button>
+          </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

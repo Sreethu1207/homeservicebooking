@@ -1,0 +1,47 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% block content %}
+<table class="table table-hover">
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Client Name</th>
+        <th>Client Address</th>
+        <th>Client Contact</th>
+        <th>Worker Name</th>
+        <th>Category</th>
+        <th>Payment</th>
+        <th>Contact</th>
+        <th>Status</th>
+    </tr>
+    {% for i in data %}
+    <tr>
+
+        <td>{{i.availability.date}}</td>
+        <td>{{i.availability.time}}</td>
+        <td>{{i.user_profile.name}}</td>
+        <td>{{i.user_profile.address}}</td>
+        <td>{{i.user_profile.contact}}</td>
+        <td>{{i.worker.name}}</td>
+        <td>{{i.worker.category}}</td>
+        <td>{{i.worker.payment}}</td>
+        <td>{{i.worker.contact}}</td>
+
+        <td>
+            {% if i.appointment_status == 0 %}
+            <a href="{% url 'approve_appointment' i.id %}"><button class="btn btn-danger">Approve</button></a>
+            <a href="{% url 'reject_appointment' i.id %}"><button class="btn btn-danger mt-3">Reject</button></a>
+            {% elif i.appointment_status == 1 %}
+            {% if i.work_status == True %}
+            <p>Completed</p>
+            {% else %}
+            <p class="text-primary">Approved</p>
+            {% endif %}
+            {% elif i.appointment_status == 2 %}
+            <p class="text-danger">Rejected</p>
+            {% endif %}
+        </td>
+
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

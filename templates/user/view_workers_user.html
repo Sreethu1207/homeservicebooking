@@ -1,0 +1,36 @@
+{% extends 'user/user_dashboard.html' %}
+{% block content %}
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+
+  {% for i in data %}
+  <div class="col">
+    <div class="card h-100">
+      <img src="{{ i.image.url }}" class="card-img-top" alt="image">
+
+      <div class="card-body">
+        <h5 class="card-title text-primary">{{ i.name }}</h5>
+        <h6 class="card-subtitle mb-2 text-body-secondary">
+          Category: {{ i.category }}
+        </h6>
+        <p class="card-text">Address: {{ i.address }}</p>
+        <p class="card-text">Contact: {{ i.contact }}</p>
+        <p class="card-text">Experience: {{ i.experience }}</p>
+        {% if i.payment == None %}
+        <a href="#">
+          <button class="btn btn-primary">Not Available Now</button>
+        </a>
+        {% else %}
+        <p class="card-text">Payment: {{ i.payment }}</p>
+        <a href="{% url 'view_worker_availability' i.id %}">
+          <button class="btn btn-primary">Check Availability</button>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+{% endblock %}

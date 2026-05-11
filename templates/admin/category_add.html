@@ -1,0 +1,16 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="col-md-12">
+<form method="post">
+    {% csrf_token %}
+    {{form|crispy}}
+    <button class="btn btn-primary">Submit</button>
+    {% for message in messages %}
+    <div class="alert alert-primary p-2" role="alert">
+        {{message}}
+    </div>
+    {% endfor %}
+</form>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'worker/worker_dashboard.html' %}
+{% block content %}
+<table class="table table-hover">
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>User Name</th>
+        <th>User Address</th>
+        <th>User Contact</th>
+        <th>Payment</th>
+        <th>Update Work Status</th>
+    </tr>
+    {% for i in data %}
+    <tr>
+
+        <td>{{i.availability.date}}</td>
+        <td>{{i.availability.time}}</td>
+        <td>{{i.user_profile.name}}</td>
+        <td>{{i.user_profile.address}}</td>
+        <td>{{i.user_profile.contact}}</td>
+        <td>{{i.worker.payment}}</td>
+        <td>
+             {% if i.work_status == False %}
+            <a href="{% url 'update_work_status' i.id%}">
+                <button class="btn btn-primary btn-text-light">Complete</button>
+            </a>
+            {% else %}
+            <p class="text-primary">Work completed</p>
+            {% endif %}
+        </td>
+
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

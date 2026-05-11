@@ -1,0 +1,14 @@
+{% extends 'user/user_dashboard.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="col-sm-12 col-xl-6">
+    <h5 class="card-title">Update profile</h5>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-outline-primary">
+                Submit
+            </button>
+        </form>
+</div>
+{% endblock %}

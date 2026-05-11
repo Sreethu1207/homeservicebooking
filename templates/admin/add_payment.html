@@ -1,0 +1,63 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h5 class="card-title">Add Payment</h5>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row mb-3 align-items-center">
+            <label class="col-md-3 col-form-label">Name:</label>
+            <div class="col-md-6">
+                <input type="text" class="form-control" value="{{data.name}}" readonly>
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <label class="col-md-3 col-form-label">Category:</label>
+            <div class="col-md-6">
+                <input type="text" class="form-control" value="{{data.category}}" readonly>
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <label class="col-md-3 col-form-label">Address:</label>
+            <div class="col-md-6">
+                <textarea class="form-control" readonly>{{data.address}}</textarea>
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <label class="col-md-3 col-form-label">Contact:</label>
+            <div class="col-md-6">
+                <input type="text" class="form-control" value="{{data.contact}}" readonly>
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <label class="col-md-3 col-form-label">Experience:</label>
+            <div class="col-md-6">
+                <input type="text" class="form-control" value="{{data.experience}}" readonly>
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <label class="col-md-3 col-form-label">Add Payment:</label>
+            <div class="col-md-6">
+                <input type="number" name="payment" class="form-control" value="{{data.payment}}" required>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary px-4">Submit</button>
+        </div>
+
+    </form>
+
+    {% for message in messages %}
+        <div class="alert alert-primary mt-3 text-center">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

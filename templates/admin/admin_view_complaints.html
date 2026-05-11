@@ -1,0 +1,28 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% block content %}
+<table class="table table-hover">
+    <tr>
+        <th>Date</th>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Complaints</th>
+        <th>Reply</th>
+
+    </tr>
+    {% for i in data %}
+    <tr>
+        <td>{{i.date}}</td>
+        <td>{{i.user.username}}</td>
+        <td>{{i.name}}</td>
+        <td>{{i.complaint}}</td>
+        <td>
+            {% if i.reply == None %}
+            <a href="{% url 'complaint_reply' i.id %}"><button class="btn btn-primary">Reply</button></a>
+            {% else %}
+            <p>{{i.reply}}</p>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
