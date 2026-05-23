@@ -8,7 +8,10 @@
     {% for i in data %}
     <tr>
         <td>{{i.category}}</td>
-        <td><a href="{% url 'category_delete' i.id%}"><button class="btn btn-danger">Delete</button></a></td>
+        <td>
+            <a href="{% url 'category_delete' i.id%}"><button class="btn btn-danger">Delete</button></a>
+            <a href="{% url 'admin_service_filter' i.id%}"><button class="btn btn-primary">Workers</button></a>
+        </td>
     </tr>
     {% endfor %}
 </table>

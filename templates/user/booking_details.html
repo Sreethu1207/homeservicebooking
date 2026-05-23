@@ -1,42 +1,194 @@
 {% extends 'user/user_dashboard.html' %}
 {% block content %}
-<table class="table table-hover">
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Worker Name</th>
-        <th>Category</th>
-        <th>Payment</th>
-        <th>Contact</th>
-        <th>Status</th>
-    </tr>
-    {% for i in data %}
-    <tr>
-        <td>{{i.availability.date}}</td>
-        <td>{{i.availability.time}}</td>
-        <td>{{i.worker.name}}</td>
-        <td>{{i.worker.category}}</td>
-        <td>{{i.worker.payment}}</td>
-        <td>{{i.worker.contact}}</td>
-        <td>
-            {% if i.appointment_status == 0 %}
-            <a href="{% url 'cancel_appointment' i.id%}"><button class="btn btn-danger">Cancel</button></a>
-            {% elif i.appointment_status == 1 %}
-            {% if i.work_status == False %}
-            <p class="text-primary">Approved</p>
-            {% else %}
-            <p class="text-primary">Work completed</p>
-            {% endif %}
-            {% elif i.appointment_status == 2 %}
-            <p class="text-danger">Rejected</p>
-            {% elif i.appointment_status == 3 %}
-            <p class="text-danger">Completed</p>
-            {% endif %}
-        </td>
-        <td>
 
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="container mt-4">
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{% url 'user_dashboard' %}"
+           class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+            ← Back
+        </a>
+    </div>
+
+    <!-- Appointment Card -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+        <!-- Header -->
+        <div class="card-header bg-primary text-white py-3">
+            <h3 class="mb-0 text-center">
+                My Appointments
+            </h3>
+        </div>
+
+        <!-- Table -->
+        <div class="card-body p-4">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Worker</th>
+                            <th>Category</th>
+                            <th>Payment</th>
+                            <th>Contact</th>
+                            <th>Status</th>
+                            <th>Payment Details</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for i in data %}
+                        <tr>
+
+                            <td>
+                                <strong>{{ i.availability.date }}</strong>
+                            </td>
+
+                            <td>
+                                {{ i.availability.time }}
+                            </td>
+
+                            <td>
+                                {{ i.worker.name }}
+                            </td>
+
+                            <td>
+                                    {{ i.worker.category }}
+                            </td>
+
+                            <td>
+                                <span class="fw-bold text-success">
+                                    {{ i.worker.payment }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ i.worker.contact }}
+                            </td>
+
+                            <!-- Status -->
+                            <td>
+
+                                {% if i.appointment_status == 0 %}
+
+                                <span class="badge bg-warning text-dark px-3 py-2">
+                                    Pending
+                                </span>
+
+                                {% elif i.appointment_status == 1 %}
+
+                                    {% if i.work_status == False %}
+
+                                    <span class="badge bg-primary px-3 py-2">
+                                        Approved
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="badge bg-success px-3 py-2">
+                                        Work Completed
+                                    </span>
+
+                                    {% endif %}
+
+                                {% elif i.appointment_status == 2 %}
+
+                                <span class="badge bg-danger px-3 py-2">
+                                    Rejected
+                                </span>
+
+                                {% elif i.appointment_status == 3 %}
+
+                                <span class="badge bg-secondary px-3 py-2">
+                                    Completed
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- Payment Section -->
+                            <td>
+
+                                {% if i.appointment_status == 0 %}
+
+                                <a href="{% url 'cancel_appointment' i.id %}">
+                                    <button class="btn btn-danger btn-sm rounded-pill px-3">
+                                        Cancel
+                                    </button>
+                                </a>
+
+                                {% elif i.appointment_status == 1 %}
+
+                                    {% if i.payment_status == 0 %}
+
+                                    <a href="{% url 'pay' i.id %}">
+                                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                                            Pay Now
+                                        </button>
+                                    </a>
+
+                                    {% elif i.payment_status == 1 %}
+
+                                    <p class="text-success fw-semibold mb-2">
+                                        Payment Successful
+                                    </p>
+
+                                    <a href="{% url 'payment_details' i.id %}">
+                                        <button class="btn btn-success btn-sm rounded-pill px-3">
+                                            Payment Details
+                                        </button>
+                                    </a>
+
+                                    {% elif i.payment_status == 2 %}
+
+                                    <p class="text-danger fw-semibold mb-2">
+                                        Payment Failed
+                                    </p>
+
+                                    <a href="{% url 'pay' i.id %}">
+                                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                                            Try Again
+                                        </button>
+                                    </a>
+
+                                    {% elif i.payment_status == 3 %}
+
+                                    <p class="text-warning fw-semibold mb-2">
+                                        Payment Cancelled
+                                    </p>
+
+                                    <a href="{% url 'pay' i.id %}">
+                                        <button class="btn btn-primary btn-sm rounded-pill px-3">
+                                            Try Again
+                                        </button>
+                                    </a>
+
+                                    {% endif %}
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% block content %}
+<div class="card col-sm-12 col-xl-12">
+  <a href="{% url 'admin_view_appointment' %}"><p class="text-start text-primary m-3">Back</p></a>
+  <div class="card-body">
+    <h5 class="card-title">Payment Details</h5>
+    <table class="table table-striped text-start">
+      <tr>
+        <th>Payment Date</th>
+        <td>{{data.date}}</td>
+      </tr>
+      <tr>
+        <th>Name</th>
+        <td>{{data.user.name}}</td>
+      </tr>
+      <tr>
+        <th>Woker Name</th>
+        <td>{{data.worker.name}}</td>
+      </tr>
+      <tr>
+        <th>Category</th>
+        <td>{{data.worker.category}}</td>
+      </tr>
+       <tr>
+        <th>Booking Date</th>
+        <td>{{data.booking.availability.date}}</td>
+      </tr>
+       <tr>
+        <th>Booking Time</th>
+        <td>{{data.booking.availability.time}}</td>
+      </tr>
+      <tr>
+        <th>Payment method</th>
+        <td>{{data.payment_method}}</td>
+      </tr>
+      <tr>
+        <th>Amount</th>
+        <td>{{data.worker.payment}}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -46,5 +46,17 @@ urlpatterns = [
     path('worker_profile', views.worker_profile, name='worker_profile'),
     path('update_worker_profile', views.update_worker_profile, name='update_worker_profile'),
     path('users', views.view_users, name='users'),
+    path('service_filter/<int:id>/', views.service_filter, name='service_filter'),
+    path('admin_service_filter/<int:id>/', views.admin_service_filter, name='admin_service_filter'),
+    path("pay/<int:id>/", views.create_paypal_payment, name='pay'),
+    path("payment-success/<int:id>/", views.payment_success, name='success_payment'),
+    path("payment-cancel/<int:id>/", views.payment_cancel, name='cancel_payment'),
+    path('payment_details/<int:id>/', views.payment_details, name='payment_details'),
+    path('admin_payment_details/<int:id>/', views.admin_payment_details, name='admin_payment_details'),
+    path('worker_payment_details/<int:id>/', views.worker_payment_details, name='worker_payment_details'),
+    path('update_offline_payment/<int:id>/', views.update_offline_payment, name='update_offline_payment'),
+    path("worker_pay/<int:id>/", views.create_worker_payout, name='worker_pay'),
+    path("worker_wallet", views.worker_wallet, name='worker_wallet'),
+    path("admin_wallet", views.completed_payment_details, name='admin_wallet'),
 
 ]

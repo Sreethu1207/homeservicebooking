@@ -127,3 +127,7 @@ CRISPY_TEMPLATE_PACK='bootstrap5'
 
 MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR,'media/')
+
+PAYPAL_CLIENT_ID="AeFaI-OvwhMIlXUsRI56PIJ1PFYxyh_EbxoMyl4nzmvoc7t4aNtn68lgZ0Ba9KSWTlSHMqa6baepajFz"
+PAYPAL_SECRET="EDlr3ChwGbtnvimdhD7w0yCGx0nGrc5oKoAC_OY9MtVlnBTjETuVAQoArCIko2-m4P35Gng0rPK2GTYr"
+PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com"

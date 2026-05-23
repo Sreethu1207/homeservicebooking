@@ -1,35 +1,95 @@
 {% extends 'user/user_dashboard.html' %}
 {% block content %}
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="container mt-4">
 
-  {% for i in data %}
-  <div class="col">
-    <div class="card h-100">
-      <img src="{{ i.image.url }}" class="card-img-top" alt="image">
-
-      <div class="card-body">
-        <h5 class="card-title text-primary">{{ i.name }}</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">
-          Category: {{ i.category }}
-        </h6>
-        <p class="card-text">Address: {{ i.address }}</p>
-        <p class="card-text">Contact: {{ i.contact }}</p>
-        <p class="card-text">Experience: {{ i.experience }}</p>
-        {% if i.payment == None %}
-        <a href="#">
-          <button class="btn btn-primary">Not Available Now</button>
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{% url 'user_dashboard' %}" class="btn btn-outline-primary rounded-pill px-4">
+            ← Back
         </a>
-        {% else %}
-        <p class="card-text">Payment: {{ i.payment }}</p>
-        <a href="{% url 'view_worker_availability' i.id %}">
-          <button class="btn btn-primary">Check Availability</button>
-        </a>
-        {% endif %}
-      </div>
     </div>
-  </div>
-  {% endfor %}
+
+    {% if data %}
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+        {% for i in data %}
+        <div class="col">
+
+            <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Image -->
+                <img src="{{ i.image.url }}"
+                     class="card-img-top"
+                     alt="image"
+                     style="height: 250px; object-fit: cover;">
+
+                <!-- Body -->
+                <div class="card-body d-flex flex-column">
+
+                    <h4 class="card-title text-primary fw-bold mb-3">
+                        {{ i.name }}
+                    </h4>
+
+                    <div class="mb-2">
+                            {{ i.category }}
+                    </div>
+
+                    <p class="card-text mb-2">
+                        <strong>Address:</strong>
+                        {{ i.address }}
+                    </p>
+
+                    <p class="card-text mb-2">
+                        <strong>Contact:</strong>
+                        {{ i.contact }}
+                    </p>
+
+                    <p class="card-text mb-3">
+                        <strong>Experience:</strong>
+                        {{ i.experience }}
+                    </p>
+
+                    {% if i.payment == None %}
+
+                    <button class="btn btn-secondary mt-auto rounded-pill" disabled>
+                        Not Available Now
+                    </button>
+
+                    {% else %}
+
+                    <div class="mb-3">
+                            payment: {{ i.payment }}
+                    </div>
+
+                    <a href="{% url 'view_worker_availability' i.id %}"
+                       class="btn btn-primary mt-auto rounded-pill">
+                        Check Availability
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="text-center mt-5">
+        <div class="card shadow-sm border-0 p-5 rounded-4">
+            <h3 class="text-muted">
+                No Workers Available
+            </h3>
+        </div>
+    </div>
+
+    {% endif %}
 
 </div>
 

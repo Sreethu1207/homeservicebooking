@@ -12,6 +12,8 @@
         <th>Payment</th>
         <th>Contact</th>
         <th>Status</th>
+        <th>Payment status</th>
+
     </tr>
     {% for i in data %}
     <tr>
@@ -39,6 +41,19 @@
             {% elif i.appointment_status == 2 %}
             <p class="text-danger">Rejected</p>
             {% endif %}
+        </td>
+        <td>
+            {% if i.payment_status == 0 %}
+            <p>Pending</p>
+            {% elif i.payment_status == 1 %}
+            <p class="text-success">Paid</p>
+            <a href="{% url 'admin_payment_details' i.id %}"><button class="btn btn-success">Payment details</button></a>
+            {% elif i.payment_status == 2 %}
+            <p class="text-danger">Payment Failed</p>
+            {% elif i.payment_status == 3 %}
+            <p class="text-warning ">Payment Cancelled</p>
+            {% endif %}
+
         </td>
 
     </tr>

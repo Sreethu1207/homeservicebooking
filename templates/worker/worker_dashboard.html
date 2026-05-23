@@ -32,7 +32,7 @@
 </head>
 
 <body>
-    <div class="container-xxl position-relative bg-white d-flex p-0">
+    <div>
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -69,6 +69,7 @@
                     </div>
                     <a href=" {% url 'worker_view_appointment' %} " class="nav-item nav-link"><i class="fa fa-th me-2"></i>Works</a>
                     <a href=" {% url 'worker_completed_works' %} " class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Completed Works</a>
+                    <a href=" {% url 'worker_wallet' %} " class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Your Wallet</a>
                     <a href=" {% url 'worker_view_complaints' %} " class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Complaints</a>
                 </div>
             </nav>

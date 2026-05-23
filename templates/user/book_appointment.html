@@ -1,46 +1,156 @@
 {% extends 'user/user_dashboard.html' %}
 {% block content %}
-<div class="col-sm-12 col-xl-6 mx-5">
-    <h5> Book your service</h5>
-<form method="post">
-    {% csrf_token %}
-        <div class="mb-3">
-        <label for="BookingDate" class="form-label">Booking Date:</label>
-        <input type="text" class="form-control" id="BookingDate" value="{{availability.date}}" name="booking_date" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="booking_time" class="form-label">Booking Time:</label>
-        <input type="text" class="form-control" id="booking_time" value="{{availability.time}}"  name="booking_time" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="WorkerName" class="form-label">Worker Name:</label>
-        <input type="text" class="form-control" id="WorkerName" value="{{worker.name}}" name="worker_name" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="Category" class="form-label">Category:</label>
-        <input type="text" class="form-control" id="Category" value="{{worker.category}}" name="category" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="Address" class="form-label">Address:</label>
-        <textarea class="form-control" id="Address" name="address" readonly>{{worker.address}}</textarea>
-    </div>
-    <div class="mb-3">
-        <label for="Contact" class="form-label">Contact:</label>
-        <input type="text" class="form-control" id="Contact" value="{{worker.contact}}" name="contact" readonly>
+<div class="container mt-4">
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{% url 'view_workers_user' %}"
+           class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+            ← Back
+        </a>
     </div>
 
-    <div class="mb-3">
-        <label for="payment" class="form-label">Payment:</label>
-        <input type="text" class="form-control" id="payment" value="{{worker.payment}}"  name="payment" readonly>
+    <!-- Booking Card -->
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Header -->
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0">
+                        Book Your Service
+                    </h3>
+                </div>
+
+                <!-- Form -->
+                <div class="card-body p-4">
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+
+                            <!-- Booking Date -->
+                            <div class="col-md-6 mb-3">
+                                <label for="BookingDate" class="form-label fw-semibold">
+                                    Booking Date
+                                </label>
+
+                                <input type="text"
+                                       class="form-control rounded-3"
+                                       id="BookingDate"
+                                       value="{{ availability.date }}"
+                                       name="booking_date"
+                                       readonly>
+                            </div>
+
+                            <!-- Booking Time -->
+                            <div class="col-md-6 mb-3">
+                                <label for="booking_time" class="form-label fw-semibold">
+                                    Booking Time
+                                </label>
+
+                                <input type="text"
+                                       class="form-control rounded-3"
+                                       id="booking_time"
+                                       value="{{ availability.time }}"
+                                       name="booking_time"
+                                       readonly>
+                            </div>
+
+                            <!-- Worker Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="WorkerName" class="form-label fw-semibold">
+                                    Worker Name
+                                </label>
+
+                                <input type="text"
+                                       class="form-control rounded-3"
+                                       id="WorkerName"
+                                       value="{{ worker.name }}"
+                                       name="worker_name"
+                                       readonly>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-6 mb-3">
+                                <label for="Category" class="form-label fw-semibold">
+                                    Category
+                                </label>
+
+                                <input type="text"
+                                       class="form-control rounded-3"
+                                       id="Category"
+                                       value="{{ worker.category }}"
+                                       name="category"
+                                       readonly>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="col-12 mb-3">
+                                <label for="Address" class="form-label fw-semibold">
+                                    Address
+                                </label>
+
+                                <textarea class="form-control rounded-3"
+                                          id="Address"
+                                          name="address"
+                                          rows="3"
+                                          readonly>{{ worker.address }}</textarea>
+                            </div>
+
+                            <!-- Contact -->
+                            <div class="col-md-6 mb-3">
+                                <label for="Contact" class="form-label fw-semibold">
+                                    Contact
+                                </label>
+
+                                <input type="text"
+                                       class="form-control rounded-3"
+                                       id="Contact"
+                                       value="{{ worker.contact }}"
+                                       name="contact"
+                                       readonly>
+                            </div>
+
+                            <!-- Payment -->
+                            <div class="col-md-6 mb-3">
+                                <label for="payment" class="form-label fw-semibold">
+                                    Payment
+                                </label>
+
+                                <input type="text"
+                                       class="form-control rounded-3"
+                                       id="payment"
+                                       value=" {{ worker.payment }}"
+                                       name="payment"
+                                       readonly>
+                            </div>
+
+                        </div>
+
+                        <!-- Button -->
+                        <div class="text-center mt-4">
+                            <button type="submit"
+                                    class="btn btn-primary px-5 py-2 rounded-pill shadow-sm">
+                                Book Now
+                            </button>
+                        </div>
+
+                        <!-- Messages -->
+                        {% for message in messages %}
+                        <div class="alert alert-primary mt-4 rounded-3 text-center"
+                             role="alert">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <a><button type="submit" class="btn btn-outline-primary">Book Now</button></a>
-    </div>
-     {% for message in messages %}
-    <div class="alert alert-primary" role="alert">
-        {{ message }}
-    </div>
-    {% endfor %}
-</form>
 </div>
+
 {% endblock %}

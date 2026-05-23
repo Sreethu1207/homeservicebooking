@@ -7,6 +7,9 @@
         <th>Client</th>
         <th>Contact</th>
         <th>Payment</th>
+        <th>Bookings payment status</th>
+        <th>Worker Payment</th>
+        <th></th>
     </tr>
     {% for i in data %}
     <tr>
@@ -15,6 +18,28 @@
         <td>{{i.user_profile.name}}</td>
         <td>{{i.user_profile.contact}}</td>
         <td>{{i.worker.payment}}</td>
+        <td>
+            {% if i.payment_status == 0 %}
+            <p>Pending</p>
+            {% elif i.payment_status == 1 %}
+            <p class="text-success">Paid</p>
+            {% endif %}
+        </td>
+        <td>{{i.worker_amount}}</td>
+
+        <td>
+            {% if i.worker_payment_status == 0 %}
+            <a href="{% url 'worker_pay' i.id%}"><button class="btn btn-primary">Pay</button></a>
+            {% elif i.worker_payment_status == 1 %}
+            <p class="text-success">Paid</p>
+            {% elif i.worker_payment_status == 2 %}
+            <p class="text-success">Failed</p>
+            <a href="{% url 'worker_pay' i.id%}"><button class="btn btn-primary">Pay</button></a>
+            {% elif i.worker_payment_status == 3 %}
+            <p class="text-success">Cancelled</p>
+            {% endif %}
+        </td>
+
     </tr>
     {% endfor %}
 </table>

@@ -1,11 +1,19 @@
+import uuid
+
+import requests
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 
 from Homeserviceapp.form import UserRegistrationForm, LoginForm, CategoryForm, WorkerRegistrationForm, AvailabilityForm, \
     FeedbackForm
-from Homeserviceapp.models import Category, WorkerRegistration, Availability, UserRegistration, Appointment, Feedback
+from Homeserviceapp.models import Category, WorkerRegistration, Availability, UserRegistration, Appointment, Feedback, \
+    Payment, WorkerEarnings
+from Homeserviceapp.paypal_utils import get_paypal_access_token
 
 
 # Create your views here.
@@ -149,14 +157,14 @@ def add_availability(request):
             obj.user = data
             obj.save()
             messages.info(request, 'Availability added')
-            return redirect('add_availability')
+            return redirect('view_availability')
     return render(request, 'worker/add_availability.html', {'form': form})
 
 
 def view_availability(request):
     today = timezone.now().date()
     worker = WorkerRegistration.objects.get(user=request.user)
-    data = Availability.objects.filter(user=worker,date__gte=today).order_by('date', 'time')
+    data = Availability.objects.filter(user=worker, date__gte=today).order_by('date', 'time')
     return render(request, 'worker/view_availability.html', {'data': data})
 
 
@@ -166,22 +174,22 @@ def delete_availability(request, id):
     return redirect('view_availability')
 
 
-def update_availability(request,id):
-    data=Availability.objects.get(id=id)
-    form=AvailabilityForm(instance=data)
-    if request.method=='POST':
-        form=AvailabilityForm(request.POST,instance=data)
+def update_availability(request, id):
+    data = Availability.objects.get(id=id)
+    form = AvailabilityForm(instance=data)
+    if request.method == 'POST':
+        form = AvailabilityForm(request.POST, instance=data)
         if form.is_valid():
             form.save()
-            messages.info(request,'Availability updated Successfully')
+            messages.info(request, 'Availability updated Successfully')
             return redirect('view_availability')
-    return render(request,'worker/update_availability.html',{'form':form})
+    return render(request, 'worker/update_availability.html', {'form': form})
 
 
 def view_availability_user(request, id):
-    today=timezone.now().date()
+    today = timezone.now().date()
     worker = WorkerRegistration.objects.get(id=id)
-    data = Availability.objects.filter(user=worker,date__gte=today).order_by('date', 'time')
+    data = Availability.objects.filter(user=worker, date__gte=today).order_by('date', 'time')
     return render(request, 'user/view_worker_availability.html', {'data': data})
 
 
@@ -204,7 +212,7 @@ def book_appointment(request, id):
             availability.booking_status = True
             availability.save()
             messages.info(request, 'Appointment booked successfully')
-            return redirect('view_worker_availability', worker.id)
+            return redirect('user_view_appointment')
     return render(request, 'user/book_appointment.html', {'availability': availability, 'worker': worker})
 
 
@@ -245,6 +253,7 @@ def worker_view_appointment(request):
     return render(request, 'worker/view_works.html', {'data': data})
 
 
+@login_required
 def update_work_status(request, id):
     data = Appointment.objects.get(id=id)
     data.work_status = True
@@ -252,6 +261,7 @@ def update_work_status(request, id):
     return redirect('worker_view_appointment')
 
 
+@login_required
 def worker_completed_works(request):
     w = WorkerRegistration.objects.get(user=request.user)
     data = Appointment.objects.filter(work_status=True, worker=w)
@@ -266,6 +276,9 @@ def admin_completed_works(request):
 def list_completed_work(request, id):
     worker = WorkerRegistration.objects.get(id=id)
     data = Appointment.objects.filter(work_status=True, worker=worker)
+    for item in data:
+        item.worker_amount = worker.payment * 0.80
+        item.save()
     return render(request, 'admin/completed_work2.html', {'data': data})
 
 
@@ -311,8 +324,8 @@ def complaint_reply(request, id):
 
 
 def worker_view_complaints(request):
-    data=Feedback.objects.all()
-    return render(request,'worker/view_complaints.html',{'data':data})
+    data = Feedback.objects.all()
+    return render(request, 'worker/view_complaints.html', {'data': data})
 
 
 def user_profile(request):
@@ -348,8 +361,225 @@ def update_worker_profile(request):
 
 
 def view_users(request):
-    data=UserRegistration.objects.all()
-    return render(request,'admin/view_users.html',{'data':data})
+    data = UserRegistration.objects.all()
+    return render(request, 'admin/view_users.html', {'data': data})
 
 
+def service_filter(request, id):
+    category = Category.objects.get(id=id)
+    data = WorkerRegistration.objects.filter(category=category)
+    return render(request, 'user/service_filter.html', {'data': data})
 
+
+def admin_service_filter(request, id):
+    category = Category.objects.get(id=id)
+    data = WorkerRegistration.objects.filter(category=category)
+    return render(request, 'admin/admin_service_filter.html', {'data': data})
+
+
+def create_paypal_payment(request, id):
+    booking = Appointment.objects.get(id=id)
+
+    # amount from booking
+    amount = booking.worker.payment
+
+    # Create payment record first
+    payment = Payment.objects.create(
+        user=booking.user_profile,
+        booking=booking,
+        worker=booking.worker,
+        payment_method="paypal",
+    )
+
+    access_token = get_paypal_access_token()
+
+    url = f"{settings.PAYPAL_BASE_URL}/v2/checkout/orders"
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {access_token}",
+    }
+
+    data = {
+        "intent": "CAPTURE",
+        "purchase_units": [
+            {
+                "amount": {
+                    "currency_code": "USD",
+                    "value": str(amount)
+                }
+            }
+        ],
+        "application_context": {
+            "return_url": f"http://127.0.0.1:8000/payment-success/{payment.id}/",
+            "cancel_url": f"http://127.0.0.1:8000/payment-cancel/{payment.id}/"
+        }
+    }
+
+    response = requests.post(url, json=data, headers=headers)
+    result = response.json()
+
+    # Save order_id in DB
+    payment.order_id = result.get("id")
+    payment.save()
+
+    # Mark appointment as pending payment
+    booking.payment_status = 0
+    booking.save()
+
+    # redirect user to PayPal
+    for link in result["links"]:
+        if link["rel"] == "approve":
+            return redirect(link["href"])
+
+    return JsonResponse(result)
+
+
+def payment_success(request, id):
+    payment = Payment.objects.get(id=id)
+    booking = payment.booking
+
+    access_token = get_paypal_access_token()
+
+    # Capture payment
+    url = f"{settings.PAYPAL_BASE_URL}/v2/checkout/orders/{payment.order_id}/capture"
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {access_token}",
+    }
+
+    response = requests.post(url, headers=headers)
+    result = response.json()
+
+    # Check if payment success
+    if result.get("status") == "COMPLETED":
+        payment.payment_id = result["id"]
+        payment.save()
+
+        booking.payment_status = 1  # PAID
+        booking.save()
+
+        return redirect('user_view_appointment')
+
+    booking.payment_status = 2  # FAILED
+    booking.save()
+
+    return redirect('user_view_appointment')
+
+
+def payment_cancel(request, id):
+    payment = Payment.objects.get(id=id)
+
+    payment.booking.payment_status = 3
+    payment.booking.save()
+
+    return redirect('user_view_appointment')
+
+
+def payment_details(request, id):
+    data = Payment.objects.get(id=id)
+    return render(request, 'user/payment.html', {'data': data})
+
+
+def admin_payment_details(request, id):
+    data = Payment.objects.get(id=id)
+    return render(request, 'admin/admin_payment.html', {'data': data})
+
+
+def worker_payment_details(request, id):
+    data = Payment.objects.get(id=id)
+    return render(request, 'worker/worker_payment.html', {'data': data})
+
+
+def update_offline_payment(request, id):
+    data = Appointment.objects.get(id=id)
+    method = Payment.objects.get(id=id)
+    data.payment_status = 1
+    data.save()
+    method.payment_method = "offline"
+    method.save()
+    return redirect('worker_view_appointment')
+
+
+def create_worker_payout(request, id):
+    booking = Appointment.objects.get(id=id)
+
+    if not booking.worker_amount:
+        return JsonResponse({"error": "Worker amount not set"}, status=400)
+
+    if not booking.worker.paypal_email:
+        return JsonResponse({"error": "Worker PayPal email missing"}, status=400)
+
+    amount = f"{float(booking.worker_amount):.2f}"
+
+    access_token = get_paypal_access_token()
+
+    url = f"{settings.PAYPAL_BASE_URL}/v1/payments/payouts"
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {access_token}",
+    }
+
+    data = {
+        "sender_batch_header": {
+            "sender_batch_id": str(uuid.uuid4()),
+            "email_subject": "You have received a payment"
+        },
+        "items": [
+            {
+                "recipient_type": "EMAIL",
+                "receiver": booking.worker.paypal_email,
+                "amount": {
+                    "value": amount,
+                    "currency": "USD"
+                },
+                "note": f"Payment for booking #{booking.id}",
+                "sender_item_id": str(booking.id)
+            }
+        ]
+    }
+
+    response = requests.post(url, json=data, headers=headers)
+    result = response.json()
+
+    if result.get("name"):
+        booking.worker_payment_status = 2  # FAILED
+        booking.save()
+        return JsonResponse(result, status=400)
+
+    booking.worker_payment_status = 1  # PAID
+    booking.save()
+
+    return JsonResponse({
+        "message": "Payment sent successfully",
+        "payout_batch_id": result.get("batch_header", {}).get("payout_batch_id")
+    })
+
+
+def worker_wallet(request):
+    worker = WorkerRegistration.objects.get(user=request.user)
+    data = Appointment.objects.filter(worker=worker, worker_payment_status=1)
+    total_earnings = sum(item.worker_amount or 0 for item in data)
+    return render(request, 'worker/Wallet.html', {'data': data, 'total_earnings': total_earnings})
+
+
+def completed_payment_details(request):
+    data = Appointment.objects.filter(payment_status=1)
+    total_earnings = 0
+    total_admin_earnings = 0
+    for item in data:
+        payment_amount = item.worker.payment or 0
+        admin_wallet = payment_amount * 0.20
+        item.admin_wallet=admin_wallet
+        item.save()
+        total_earnings += payment_amount
+        total_admin_earnings += admin_wallet
+    context = {
+        "data": data,
+        "total_earnings": total_earnings,
+        "total_admin_earnings": total_admin_earnings,
+    }
+
+    return render(request, 'admin/paymentDetails.html', context)

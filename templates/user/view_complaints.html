@@ -1,31 +1,90 @@
 {% extends 'user/user_dashboard.html' %}
-{% load crispy_forms_tags %}
 {% block content %}
-<table class="table table-hover">
-    <tr>
-        <th>Date</th>
-        <th>Complaints</th>
-        <th>Reply</th>
-        <th></th>
 
-    </tr>
-    {% for i in data %}
-    <tr>
-        <td>{{i.date}}</td>
-        <td>{{i.complaint}}</td>
-        <td>
-        {% if i.reply == None %}
-            <p>pending</p>
-        {% else %}
-            <p>{{i.reply}}</p>
-        </td>
-        {% endif %}
-        {% if i.reply == None %}
-        <td>
-            <a href="{% url 'delete_complaints' i.id %}"><button class="btn btn-danger">Delete</button></a>
-        </td>
-        {% endif %}
-    </tr>
-    {% endfor %}
-</table>
+<div class="container mt-4">
+
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{% url 'user_dashboard' %}"
+           class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+            ← Back
+        </a>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+        <!-- Header -->
+        <div class="card-header bg-primary text-white text-center py-3">
+            <h4 class="mb-0">My Complaints</h4>
+        </div>
+
+        <!-- Table Body -->
+        <div class="card-body p-4">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle text-center">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Complaint</th>
+                            <th>Reply</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for i in data %}
+                        <tr>
+
+                            <td>
+                                <strong>{{ i.date }}</strong>
+                            </td>
+
+                            <td class="text-start">
+                                {{ i.complaint }}
+                            </td>
+
+                            <td>
+                                {% if i.reply == None %}
+                                    <span class="badge bg-warning text-dark px-3 py-2">
+                                        Pending
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-success px-3 py-2">
+                                        {{ i.reply }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if i.reply == None %}
+                                    <a href="{% url 'delete_complaints' i.id %}">
+                                        <button class="btn btn-danger btn-sm rounded-pill px-3">
+                                            Delete
+                                        </button>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

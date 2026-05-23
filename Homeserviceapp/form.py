@@ -37,7 +37,7 @@ class CategoryForm(forms.ModelForm):
 class WorkerRegistrationForm(forms.ModelForm):
     class Meta:
         model = WorkerRegistration
-        fields = ('name', 'category', 'address', 'contact', 'experience', 'image')
+        fields = ('name', 'category', 'address', 'contact', 'experience', 'image','paypal_email')
 
 
 class AvailabilityForm(forms.ModelForm):

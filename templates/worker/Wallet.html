@@ -1,0 +1,29 @@
+{% extends 'worker/worker_dashboard.html' %}
+{% block content %}
+<div class="col-md-12" >
+<table class="table table-hover">
+    <tr>
+        <th>Work Date</th>
+        <th>Work time</th>
+        <th>Your Earnings</th>
+    </tr>
+    {% for i in data %}
+    <tr>
+
+        <td>{{i.availability.date}}</td>
+        <td>{{i.availability.time}}</td>
+        <td>{{i.worker_amount}}</td>
+    </tr>
+    {% endfor %}
+</table>
+<div class="row">
+  <div class="col-md-4  mb-2">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="text-dark">Total Earnings:{{total_earnings}}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

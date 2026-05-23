@@ -1,23 +1,87 @@
 {% extends 'user/user_dashboard.html' %}
 {% block content %}
-<table class="table table-hover">
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th></th>
-    </tr>
-    {% for i in data %}
-    <tr>
-        <td>{{i.date}}</td>
-        <td>{{i.time}}</td>
-         <td>
-             {% if i.booking_status == False %}
-             <a href="{% url 'book_appointment' i.id %}"><button class="btn btn-danger">Book Now</button></a>
-             {% else %}
-             <p>Booked</p>
-             {% endif %}
-         </td>
-    </tr>
-    {% endfor %}
-</table>
+
+<div class="container mt-4">
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{% url 'view_workers_user' %}"
+           class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+            ← Back
+        </a>
+    </div>
+
+    <!-- Availability Card -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+        <!-- Header -->
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0 text-center">
+                Worker Availability
+            </h4>
+        </div>
+
+        <!-- Table -->
+        <div class="card-body p-4">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for i in data %}
+                        <tr>
+
+                            <td>
+                                <strong>{{ i.date }}</strong>
+                            </td>
+
+                            <td>
+                                {{ i.time }}
+                            </td>
+
+                            <td class="text-center">
+
+                                {% if i.booking_status == False %}
+
+                                <a href="{% url 'book_appointment' i.id %}">
+                                    <button class="btn btn-danger rounded-pill px-4">
+                                        Book Now
+                                    </button>
+                                </a>
+
+                                {% else %}
+
+                                <span class="badge bg-success px-4 py-2 fs-6">
+                                    Booked
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

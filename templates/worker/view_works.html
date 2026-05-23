@@ -9,6 +9,7 @@
         <th>User Contact</th>
         <th>Payment</th>
         <th>Update Work Status</th>
+        <th>Update Offline payment</th>
     </tr>
     {% for i in data %}
     <tr>
@@ -26,6 +27,15 @@
             </a>
             {% else %}
             <p class="text-primary">Work completed</p>
+            {% endif %}
+        </td>
+        <td>
+            {% if i.payment_status == 0 %}
+            <a href="{% url 'update_offline_payment' i.id%}">
+                <button class="btn btn-primary btn-text-light">Offline Payment</button>
+            </a>
+            {% else %}
+            <p class="text-success">Paid</p>
             {% endif %}
         </td>
 
