@@ -1,7 +1,21 @@
 {% extends 'worker/worker_dashboard.html' %}
 {% block content %}
 <div class="card col-sm-12 col-xl-12">
-  <a href="{% url 'user_view_appointment' %}"><p class="text-start text-primary m-3">Back</p></a>
+ <div class="d-flex align-items-center justify-content-between m-2">
+
+        <!-- Back Button -->
+        <a href="{% url 'worker_completed_works' %}"
+           class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm  no-print">
+            <i class="fa fa-arrow-left me-1"></i> Back
+        </a>
+
+        <!-- Download Button -->
+        <a href="#"
+           onclick="window.print()"
+           class="btn btn-success btn-sm rounded-pill px-3 shadow-sm  no-print">
+            <i class="fa fa-download me-1"></i> Download
+        </a>
+    </div>
   <div class="card-body">
     <h5 class="card-title">Payment Details</h5>
     <table class="table table-striped text-start">

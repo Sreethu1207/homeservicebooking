@@ -1,12 +1,12 @@
-{% extends 'user/user_dashboard.html' %}
+{% extends 'worker/worker_dashboard.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-5">
 
     <!-- Back Button -->
     <div class="mb-4">
-        <a href="{% url 'user_profile' %}"
+        <a href="{% url 'worker_dashboard' %}"
            class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
             ← Back
         </a>
@@ -14,15 +14,15 @@
 
     <div class="row justify-content-center">
 
-        <div class="col-lg-7">
+        <div class="col-lg-8">
 
-            <!-- Update Profile Card -->
+            <!-- Report Card -->
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
 
                 <!-- Header -->
                 <div class="card-header bg-primary text-white text-center py-4">
                     <h3 class="mb-0">
-                        Update Profile
+                        Report a Service Issue
                     </h3>
                 </div>
 
@@ -42,11 +42,19 @@
                         <div class="text-center">
                             <button type="submit"
                                     class="btn btn-primary rounded-pill px-5 py-2 shadow-sm">
-                                Save Changes
+                                Submit Report
                             </button>
                         </div>
 
                     </form>
+
+                    <!-- Messages -->
+                    {% for message in messages %}
+                    <div class="alert alert-primary mt-4 rounded-3 text-center"
+                         role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
 
                 </div>
 

@@ -1,45 +1,103 @@
 {% extends 'worker/worker_dashboard.html' %}
 {% block content %}
-<table class="table table-hover">
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>User Name</th>
-        <th>User Address</th>
-        <th>User Contact</th>
-        <th>Payment</th>
-        <th>Update Work Status</th>
-        <th>Update Offline payment</th>
-    </tr>
-    {% for i in data %}
-    <tr>
 
-        <td>{{i.availability.date}}</td>
-        <td>{{i.availability.time}}</td>
-        <td>{{i.user_profile.name}}</td>
-        <td>{{i.user_profile.address}}</td>
-        <td>{{i.user_profile.contact}}</td>
-        <td>{{i.worker.payment}}</td>
-        <td>
-             {% if i.work_status == False %}
-            <a href="{% url 'update_work_status' i.id%}">
-                <button class="btn btn-primary btn-text-light">Complete</button>
-            </a>
-            {% else %}
-            <p class="text-primary">Work completed</p>
-            {% endif %}
-        </td>
-        <td>
-            {% if i.payment_status == 0 %}
-            <a href="{% url 'update_offline_payment' i.id%}">
-                <button class="btn btn-primary btn-text-light">Offline Payment</button>
-            </a>
-            {% else %}
-            <p class="text-success">Paid</p>
-            {% endif %}
-        </td>
+<div class="container py-4">
 
-    </tr>
-    {% endfor %}
-</table>
+    <!-- Top Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-white shadow-sm rounded-4">
+
+        <a href="{% url 'worker_dashboard' %}" class="btn btn-light border rounded-pill px-4">
+            ← Back
+        </a>
+
+        <h5 class="mb-0 fw-bold text-primary">Assigned Work Details</h5>
+
+        <div></div>
+
+    </div>
+
+    <!-- Card Table -->
+    <div class="card border-0 shadow-lg rounded-4">
+
+        <div class="card-body p-4">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle text-center mb-0">
+
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Address</th>
+                            <th>Contact</th>
+                            <th>Payment</th>
+                            <th>Work Status</th>
+                            <th>Payment Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for i in data %}
+                        <tr>
+
+                            <td class="fw-semibold">{{ i.availability.date }}</td>
+                            <td>{{ i.availability.time }}</td>
+
+                            <td>{{ i.user_profile.name }}</td>
+                            <td>{{ i.user_profile.address }}</td>
+                            <td>{{ i.user_profile.contact }}</td>
+
+                            <td class="fw-bold text-success">
+                                {{ i.worker.payment }}
+                            </td>
+
+                            <!-- Work Status -->
+                            <td>
+                                {% if i.appointment_status == 1 %}
+                                {% if i.work_status == False %}
+                                    <p>Pending</p>
+                                {% else %}
+                                <p class="text-success">Work completed</p>
+
+                                {% endif %}
+                                {% endif %}
+                            </td>
+
+                            <!-- Payment Status -->
+                            <td>
+                                {% if i.payment_status == 0 %}
+                                    <a href="{% url 'update_offline_payment' i.id %}"
+                                       class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                                        Pay Offline
+                                    </a>
+                                {% else %}
+                                    <span class="badge bg-primary px-3 py-2 rounded-pill">
+                                        Paid
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-muted py-4">
+                                No work assigned yet
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
 {% endblock %}

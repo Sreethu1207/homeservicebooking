@@ -1,0 +1,72 @@
+{% extends 'admin/admin_dashboard.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Heading -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+        <div class="card-header bg-primary text-white">
+            <h3 class="text-center mb-0">
+                Appointment Reviews
+            </h3>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Worker</th>
+                            <th>Category</th>
+                            <th>Reviews</th>
+                            <th>Ratings</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for i in data %}
+
+                        <tr>
+
+                            <td>
+                                {{ i.created_at }}
+                            </td>
+
+                            <td>
+                                {{ i.worker.name }}
+                            </td>
+
+                            <td>
+                                {{ i.worker.category }}
+                            </td>
+                            <td>
+                                {{ i.review}}
+                            </td>
+                            <td>
+                                {{ i.rating}}
+                            </td>
+
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

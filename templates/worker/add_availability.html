@@ -1,16 +1,53 @@
 {% extends 'worker/worker_dashboard.html' %}
 {% block content %}
 {% load crispy_forms_tags %}
-<div class="col-xl-6">
-<form method="post">
-    {% csrf_token %}
-    {{form|crispy}}
-    <button class="btn btn-primary">Submit</button>
-    {% for message in messages %}
-    <div class="alert alert-primary mt-2" role="alert">
-        {{message}}
+
+<div class="container py-5">
+
+    <div class="position-relative">
+
+        <!-- Floating Back Button -->
+        <a href="{% url 'worker_dashboard' %}"
+           class="btn btn-light border shadow-sm rounded-circle position-absolute"
+           style="top:-20px; left:-10px; width:45px; height:45px; display:flex; align-items:center; justify-content:center;">
+            ←
+        </a>
+
+        <!-- Card -->
+        <div class="card border-0 shadow-lg rounded-5 mx-auto" style="max-width: 650px;">
+
+            <div class="card-header bg-gradient bg-primary text-white text-center rounded-top-5 py-3">
+                <h5 class="mb-0 fw-semibold">Add Availability Details</h5>
+            </div>
+
+            <div class="card-body p-5">
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-info alert-dismissible fade show rounded-4">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        {{ form|crispy }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 rounded-4 py-2 fw-semibold">
+                        Submit
+                    </button>
+
+                </form>
+
+            </div>
+        </div>
+
     </div>
-    {% endfor %}
-</form>
 </div>
+
 {% endblock %}

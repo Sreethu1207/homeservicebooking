@@ -1,39 +1,109 @@
 {% extends 'worker/worker_dashboard.html' %}
 {% block content %}
-<table class="table table-hover">
-    <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Client Name</th>
-        <th>Client Address</th>
-        <th>Client Contact</th>
-        <th>Payment</th>
-        <th>Payment status</th>
-    </tr>
-    {% for i in data %}
-    <tr>
 
-        <td>{{i.availability.date}}</td>
-        <td>{{i.availability.time}}</td>
-        <td>{{i.user_profile.name}}</td>
-        <td>{{i.user_profile.address}}</td>
-        <td>{{i.user_profile.contact}}</td>
-        <td>{{i.worker.payment}}</td>
-        <td>
-            {% if i.payment_status == 0 %}
-            <p>Pending</p>
-            {% elif i.payment_status == 1 %}
-            <p class="text-success">Paid</p>
-            <a href="{% url 'worker_payment_details' i.id %}"><button class="btn btn-success">Payment details</button></a>
-            {% elif i.payment_status == 2 %}
-            <p class="text-danger">Payment Failed</p>
-            {% elif i.payment_status == 3 %}
-            <p class="text-warning ">Payment Cancelled</p>
-            {% endif %}
+<div class="container py-4">
 
-        </td>
+    <!-- Top Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-white shadow-sm rounded-4">
 
-    </tr>
-    {% endfor %}
-</table>
+        <a href="{% url 'worker_dashboard' %}" class="btn btn-light border rounded-pill px-4">
+            ← Back
+        </a>
+
+        <h5 class="mb-0 fw-bold text-primary">Payment Details</h5>
+
+        <div></div>
+
+    </div>
+
+    <!-- Card Table -->
+    <div class="card border-0 shadow-lg rounded-4">
+
+        <div class="card-body p-4">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle text-center mb-0">
+
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Client</th>
+                            <th>Address</th>
+                            <th>Contact</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for i in data %}
+                        <tr>
+
+                            <td class="fw-semibold">{{ i.availability.date }}</td>
+                            <td>{{ i.availability.time }}</td>
+
+                            <td>{{ i.user_profile.name }}</td>
+                            <td>{{ i.user_profile.address }}</td>
+                            <td>{{ i.user_profile.contact }}</td>
+
+                            <td class="fw-bold text-success">
+                                 {{ i.worker.payment }}
+                            </td>
+
+                            <!-- Payment Status -->
+                            <td>
+
+                                {% if i.payment_status == 0 %}
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">
+                                        Pending
+                                    </span>
+
+                                {% elif i.payment_status == 1 %}
+                                    <span class="badge bg-success px-3 py-2 rounded-pill">
+                                        Paid
+                                    </span>
+
+                                    <div class="mt-2">
+                                        <a href="{% url 'worker_payment_details' i.id %}"
+                                           class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                            View Details
+                                        </a>
+                                    </div>
+
+                                {% elif i.payment_status == 2 %}
+                                    <span class="badge bg-danger px-3 py-2 rounded-pill">
+                                        Failed
+                                    </span>
+
+                                {% elif i.payment_status == 3 %}
+                                    <span class="badge bg-secondary px-3 py-2 rounded-pill">
+                                        Cancelled
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-muted py-4">
+                                No payment records found
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
 {% endblock %}

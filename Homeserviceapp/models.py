@@ -33,16 +33,20 @@ class WorkerRegistration(models.Model):
     payment = models.IntegerField(null=True, blank=True)
     experience = models.IntegerField()
     image = models.ImageField(upload_to='uploads/')
+    def __str__(self):
+        return self.name
+
 
 
 class Availability(models.Model):
     user = models.ForeignKey(WorkerRegistration, on_delete=models.DO_NOTHING)
     date = models.DateField()
     time = models.TimeField()
-    booking_status = models.BooleanField(default=False)
+    schedule_status = models.IntegerField(default=0)
+    booking_status = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.date,self.time
+        return self.date, self.time
 
 
 class Appointment(models.Model):
@@ -52,14 +56,15 @@ class Appointment(models.Model):
     availability = models.ForeignKey(Availability, on_delete=models.DO_NOTHING)
     appointment_status = models.IntegerField(default=0)
     work_status = models.BooleanField(default=False)
-    payment_status=models.IntegerField(default=0)
-    worker_amount=models.IntegerField(null=True,blank=True)
-    worker_payment_status=models.IntegerField(default=0)
-    admin_wallet=models.IntegerField(null=True,blank=True)
+    payment_status = models.IntegerField(default=0)
+    worker_amount = models.IntegerField(null=True, blank=True)
+    worker_payment_status = models.IntegerField(default=0)
+    admin_wallet = models.IntegerField(null=True, blank=True)
 
 
 class Feedback(models.Model):
     user = models.ForeignKey(Login, on_delete=models.CASCADE, related_name='feedback')
+    worker = models.ForeignKey(WorkerRegistration, on_delete=models.CASCADE, null=True,blank=True)
     date = models.DateField()
     name = models.CharField(max_length=300)
     complaint = models.TextField()
@@ -67,20 +72,28 @@ class Feedback(models.Model):
 
 
 class Payment(models.Model):
-    user = models.ForeignKey(UserRegistration, on_delete=models.DO_NOTHING,related_name='payment')
+    user = models.ForeignKey(UserRegistration, on_delete=models.DO_NOTHING, related_name='payment')
     booking = models.ForeignKey(Appointment, on_delete=models.DO_NOTHING)
-    worker = models.ForeignKey(WorkerRegistration, on_delete=models.DO_NOTHING,related_name='payment_worker')
-    date=models.DateTimeField(auto_now_add=True)
+    worker = models.ForeignKey(WorkerRegistration, on_delete=models.DO_NOTHING, related_name='payment_worker')
+    date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(max_length=200, default="paypal")
     order_id = models.CharField(max_length=255, blank=True, null=True)
     payment_id = models.CharField(max_length=255, blank=True, null=True)
 
 
 class WorkerEarnings(models.Model):
-    worker = models.ForeignKey(WorkerRegistration, on_delete=models.DO_NOTHING,related_name='worker_payment')
+    worker = models.ForeignKey(WorkerRegistration, on_delete=models.DO_NOTHING, related_name='worker_payment')
     booking = models.ForeignKey(Appointment, on_delete=models.DO_NOTHING)
     date = models.DateTimeField(auto_now_add=True)
     payment_method = models.CharField(max_length=200, default="paypal")
     order_id = models.CharField(max_length=255, blank=True, null=True)
     payment_id = models.CharField(max_length=255, blank=True, null=True)
 
+
+class Review(models.Model):
+    user = models.ForeignKey(UserRegistration, on_delete=models.CASCADE)
+    worker = models.ForeignKey(WorkerRegistration, on_delete=models.CASCADE)
+    booking = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    review = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)

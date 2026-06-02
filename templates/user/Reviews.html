@@ -1,0 +1,114 @@
+{% extends 'user/user_dashboard.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Heading -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+        <div class="card-header bg-primary text-white">
+            <h3 class="text-center mb-0">
+                Appointment Reviews
+            </h3>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Worker</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Review & Rating</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for i in data %}
+
+                        <tr>
+
+                            <td>
+                                {{ i.availability.date }}
+                            </td>
+
+                            <td>
+                                {{ i.availability.time }}
+                            </td>
+
+                            <td>
+                                {{ i.worker.name }}
+                            </td>
+
+                            <td>
+                                {{ i.worker.category }}
+                            </td>
+
+                            <td>
+
+                                {% if i.work_status == 1 %}
+                                    <span class="text-success">
+                                        Work Completed
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if i.has_review %}
+
+                                    <!-- SHOW REVIEW -->
+
+                                    <div class="border rounded p-2 bg-light">
+
+                                        <div class="text-warning mb-1">
+                                            {{ i.review_data.rating }}/5
+                                        </div>
+
+                                        <small>
+                                            {{ i.review_data.review }}
+                                        </small>
+                                    </div>
+                                {% else %}
+                                    <!-- ADD REVIEW BUTTON -->
+                                    <a href="{% url 'add_review' i.id %}">
+                                        <button class="btn btn-primary btn-sm">
+                                            Add Review
+                                        </button>
+                                    </a>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+        {% for message in messages %}
+                    <div class="alert alert-primary mt-4 rounded-3 text-center"
+                         role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

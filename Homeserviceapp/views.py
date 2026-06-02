@@ -5,14 +5,17 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.db.models import Avg
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
+from django.template.loader import get_template
 from django.utils import timezone
+from xhtml2pdf import pisa
 
 from Homeserviceapp.form import UserRegistrationForm, LoginForm, CategoryForm, WorkerRegistrationForm, AvailabilityForm, \
     FeedbackForm
 from Homeserviceapp.models import Category, WorkerRegistration, Availability, UserRegistration, Appointment, Feedback, \
-    Payment, WorkerEarnings
+    Payment,  Review
 from Homeserviceapp.paypal_utils import get_paypal_access_token
 
 
@@ -36,6 +39,7 @@ def user_registration(request):
             c = user_form.save(commit=False)
             c.user = user
             c.save()
+            messages.info(request,'Registered Successfully')
             return redirect('login_view')
     return render(request, 'UserRegistration.html', {'login_form': login_form, 'user_form': user_form})
 
@@ -59,15 +63,58 @@ def login_view(request):
 
 
 def user_dashboard(request):
-    return render(request, 'user/user_dashboard.html')
+    user=UserRegistration.objects.get(user=request.user)
+    workers=WorkerRegistration.objects.all()
+    appointments=Appointment.objects.filter(user_profile=user)
+    category=Category.objects.all()
+    total_bookings=appointments.count()
+    total_services=category.count()
+    total_workers=workers.count()
+
+    context={
+       'total_bookings':total_bookings,
+       'total_services':total_services,
+       'total_workers' : total_workers,
+    }
+    return render(request, 'user/user_dashboard.html',context)
 
 
 def worker_dashboard(request):
-    return render(request, 'worker/worker_dashboard.html')
+    worker=WorkerRegistration.objects.get(user=request.user)
+    data=Appointment.objects.filter(worker=worker,appointment_status=1)
+    works=Appointment.objects.filter(worker=worker,work_status=True)
+    ratings = Review.objects.filter(worker=worker)
+    total_works=data.count()
+    completed_works=works.count()
+    total_earnings=sum(item.worker_amount or 0 for item in works)
+    avg_rating = ratings.aggregate(
+        Avg('rating')
+    )['rating__avg']
+    context={
+        'total_works':total_works,
+        'completed_works':completed_works,
+        'total_earnings':total_earnings,
+        'avg_rating':avg_rating,
+    }
+    return render(request, 'worker/worker_dashboard.html',context)
 
 
 def admin_dashboard(request):
-    return render(request, 'admin/admin_dashboard.html')
+    user=UserRegistration.objects.all()
+    workers=WorkerRegistration.objects.all()
+    appointments=Appointment.objects.filter(appointment_status=1)
+    complaints=Feedback.objects.all()
+    total_users=user.count()
+    total_workers=workers.count()
+    total_bookings=appointments.count()
+    total_complaints=complaints.count()
+    context={
+        'total_users':total_users,
+        'total_workers':total_workers,
+        'total_bookings':total_bookings,
+        'total_complaints':total_complaints
+    }
+    return render(request, 'admin/admin_dashboard.html',context)
 
 
 def logout_view(request):
@@ -82,7 +129,7 @@ def category_add(request):
         if form.is_valid():
             form.save()
             messages.info(request, 'service category added successfully')
-            return redirect('category_add')
+            return redirect('category_view')
     return render(request, 'admin/category_add.html', {'form': form})
 
 
@@ -115,12 +162,22 @@ def worker_registration(request):
             c = worker_form.save(commit=False)
             c.user = user
             c.save()
+            messages.info(request, 'Registered Successfully')
             return redirect('login_view')
     return render(request, 'WorkerRegistration.html', {'login_form': login_form, 'worker_form': worker_form})
 
 
 def view_workers_user(request):
     data = WorkerRegistration.objects.all()
+    for i in data:
+        reviews = Review.objects.filter(worker=i)
+
+        i.avg_rating = reviews.aggregate(
+            Avg('rating')
+        )['rating__avg']
+
+        i.total_reviews = reviews.count()
+
     return render(request, 'user/view_workers_user.html', {'data': data})
 
 
@@ -132,6 +189,7 @@ def view_workers_admin(request):
 def worker_delete(request, id):
     data = WorkerRegistration.objects.get(id=id)
     data.delete()
+    messages.info(request, 'Worker deleted')
     return redirect('view_workers_admin')
 
 
@@ -157,7 +215,7 @@ def add_availability(request):
             obj.user = data
             obj.save()
             messages.info(request, 'Availability added')
-            return redirect('view_availability')
+            return redirect('add_availability')
     return render(request, 'worker/add_availability.html', {'form': form})
 
 
@@ -171,6 +229,7 @@ def view_availability(request):
 def delete_availability(request, id):
     data = Availability.objects.get(id=id)
     data.delete()
+    messages.info(request, 'Availability Deleted')
     return redirect('view_availability')
 
 
@@ -181,39 +240,69 @@ def update_availability(request, id):
         form = AvailabilityForm(request.POST, instance=data)
         if form.is_valid():
             form.save()
-            messages.info(request, 'Availability updated Successfully')
+            messages.info(request, 'Availability updated successfully')
             return redirect('view_availability')
     return render(request, 'worker/update_availability.html', {'form': form})
+
+
+def workers_schedule(request):
+    data = Availability.objects.all()
+    return render(request, 'admin/workers_schedule.html', {'data': data})
+
+
+def workers_schedule_approve(request, id):
+    data = Availability.objects.get(id=id)
+    data.schedule_status = 1
+    data.save()
+    return redirect('workers_schedule')
+
+
+def workers_schedule_reject(request, id):
+    data = Availability.objects.get(id=id)
+    data.schedule_status = 2
+    data.save()
+    return redirect('workers_schedule')
 
 
 def view_availability_user(request, id):
     today = timezone.now().date()
     worker = WorkerRegistration.objects.get(id=id)
-    data = Availability.objects.filter(user=worker, date__gte=today).order_by('date', 'time')
+    data = Availability.objects.filter(user=worker, schedule_status=1, date__gte=today).order_by('date', 'time')
     return render(request, 'user/view_worker_availability.html', {'data': data})
 
 
 def book_appointment(request, id):
     availability = Availability.objects.get(id=id)
-    u = UserRegistration.objects.get(user=request.user)
+    user_profile = UserRegistration.objects.get(user=request.user)
     worker = availability.user
 
-    if availability.booking_status:
-        messages.info(request, 'Appointment already exists')
+    # Only block if already booked
+    if availability.booking_status == 1:
+        messages.warning(request, 'This slot is already booked.')
         return redirect('view_worker_availability', worker.id)
-    else:
-        if request.method == 'POST':
-            obj = Appointment()
-            obj.user = u.user
-            obj.user_profile = u
-            obj.worker = worker
-            obj.availability = availability
-            obj.save()
-            availability.booking_status = True
-            availability.save()
-            messages.info(request, 'Appointment booked successfully')
-            return redirect('user_view_appointment')
-    return render(request, 'user/book_appointment.html', {'availability': availability, 'worker': worker})
+
+    if request.method == 'POST':
+        appointment = Appointment.objects.create(
+            user=user_profile.user,
+            user_profile=user_profile,
+            worker=worker,
+            availability=availability
+        )
+
+        availability.booking_status = 1
+        availability.save()
+
+        messages.success(request, 'Appointment booked successfully.')
+        return redirect('user_view_appointment')
+
+    return render(
+        request,
+        'user/book_appointment.html',
+        {
+            'availability': availability,
+            'worker': worker
+        }
+    )
 
 
 def user_view_appointments(request):
@@ -223,8 +312,16 @@ def user_view_appointments(request):
 
 
 def cancel_appointment(request, id):
-    data = Appointment.objects.get(id=id)
-    data.delete()
+    appointment = Appointment.objects.get(id=id)
+
+    appointment.appointment_status = 0
+    appointment.save()
+
+    appointment.availability.booking_status = 2
+    appointment.availability.save()
+
+    appointment.delete()
+    messages.success(request, 'Appointment cancelled successfully')
     return redirect('user_view_appointment')
 
 
@@ -233,32 +330,24 @@ def admin_view_appointment(request):
     return render(request, 'admin/admin_view_appointment.html', {'data': data})
 
 
+def worker_view_appointment(request):
+    w = WorkerRegistration.objects.get(user=request.user)
+    data = Appointment.objects.filter(worker=w)
+    return render(request, 'worker/view_works.html', {'data': data})
+
+
 def approve_appointment(request, id):
     data = Appointment.objects.get(id=id)
     data.appointment_status = 1
     data.save()
-    return redirect('admin_view_appointment')
+    return redirect('user_view_appointment')
 
 
 def reject_appointment(request, id):
     data = Appointment.objects.get(id=id)
     data.appointment_status = 2
     data.save()
-    return redirect('admin_view_appointment')
-
-
-def worker_view_appointment(request):
-    w = WorkerRegistration.objects.get(user=request.user)
-    data = Appointment.objects.filter(appointment_status=1, worker=w)
-    return render(request, 'worker/view_works.html', {'data': data})
-
-
-@login_required
-def update_work_status(request, id):
-    data = Appointment.objects.get(id=id)
-    data.work_status = True
-    data.save()
-    return redirect('worker_view_appointment')
+    return redirect('user_view_appointment')
 
 
 @login_required
@@ -276,10 +365,24 @@ def admin_completed_works(request):
 def list_completed_work(request, id):
     worker = WorkerRegistration.objects.get(id=id)
     data = Appointment.objects.filter(work_status=True, worker=worker)
+    payment_count=Appointment.objects.filter(worker_payment_status=0,worker=worker)
     for item in data:
         item.worker_amount = worker.payment * 0.80
         item.save()
-    return render(request, 'admin/completed_work2.html', {'data': data})
+    pending_payments=payment_count.count()
+    total_earnings = sum(
+        item.worker_amount or 0
+        for item in data
+        if item.worker_payment_status == 1
+    )
+
+    context={
+        'data': data,
+        'total_earnings':total_earnings,
+        'pending_payments':pending_payments
+    }
+
+    return render(request, 'admin/completed_work2.html',context )
 
 
 def add_complaints(request):
@@ -292,7 +395,7 @@ def add_complaints(request):
             obj.user = u
             obj.save()
             messages.info(request, 'complaint registered successfully')
-            return redirect('add_complaints')
+            return redirect('view_complaints')
     return render(request, 'user/add_complaints.html', {'form': form})
 
 
@@ -323,8 +426,25 @@ def complaint_reply(request, id):
     return render(request, 'admin/complaint_reply.html', {'data': data})
 
 
+def worker_add_complaints(request):
+    form = FeedbackForm()
+
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+
+            obj.user = request.user
+            obj.worker = WorkerRegistration.objects.get(user=request.user)
+            obj.save()
+            messages.info(request, 'Complaints Registered Successfully')
+            return redirect('worker_view_complaints')
+    return render(request, 'worker/add_complaints.html', {'form': form})
+
+
 def worker_view_complaints(request):
-    data = Feedback.objects.all()
+    data = Feedback.objects.filter(user=request.user)
     return render(request, 'worker/view_complaints.html', {'data': data})
 
 
@@ -340,6 +460,7 @@ def update_user_profile(request):
         form = UserRegistrationForm(request.POST, instance=data)
         if form.is_valid():
             form.save()
+            messages.info(request, 'Update Profile Successfully')
             return redirect('user_profile')
     return render(request, 'user/update_user_profile.html', {'form': form})
 
@@ -356,6 +477,7 @@ def update_worker_profile(request):
         form = WorkerRegistrationForm(request.POST, request.FILES, instance=data)
         if form.is_valid():
             form.save()
+            messages.info(request, 'Update profile successfully')
             return redirect('worker_profile')
     return render(request, 'worker/update_worker_profile.html', {'form': form})
 
@@ -368,6 +490,14 @@ def view_users(request):
 def service_filter(request, id):
     category = Category.objects.get(id=id)
     data = WorkerRegistration.objects.filter(category=category)
+    for i in data:
+        reviews = Review.objects.filter(worker=i)
+
+        i.avg_rating = reviews.aggregate(
+            Avg('rating')
+        )['rating__avg']
+
+        i.total_reviews = reviews.count()
     return render(request, 'user/service_filter.html', {'data': data})
 
 
@@ -437,11 +567,10 @@ def create_paypal_payment(request, id):
 
 def payment_success(request, id):
     payment = Payment.objects.get(id=id)
-    booking = payment.booking
+    booking = payment.booking  # Appointment linked properly
 
     access_token = get_paypal_access_token()
 
-    # Capture payment
     url = f"{settings.PAYPAL_BASE_URL}/v2/checkout/orders/{payment.order_id}/capture"
 
     headers = {
@@ -452,17 +581,20 @@ def payment_success(request, id):
     response = requests.post(url, headers=headers)
     result = response.json()
 
-    # Check if payment success
+    # PAYMENT SUCCESS
     if result.get("status") == "COMPLETED":
         payment.payment_id = result["id"]
         payment.save()
 
-        booking.payment_status = 1  # PAID
+        booking.payment_status = 1
+        booking.work_status = True
         booking.save()
 
         return redirect('user_view_appointment')
 
-    booking.payment_status = 2  # FAILED
+    # PAYMENT FAILED
+    booking.payment_status = 2
+    booking.work_status = False
     booking.save()
 
     return redirect('user_view_appointment')
@@ -479,6 +611,7 @@ def payment_cancel(request, id):
 
 def payment_details(request, id):
     data = Payment.objects.get(id=id)
+
     return render(request, 'user/payment.html', {'data': data})
 
 
@@ -569,17 +702,88 @@ def completed_payment_details(request):
     data = Appointment.objects.filter(payment_status=1)
     total_earnings = 0
     total_admin_earnings = 0
+    total_workers_earnings=0
     for item in data:
         payment_amount = item.worker.payment or 0
         admin_wallet = payment_amount * 0.20
-        item.admin_wallet=admin_wallet
+        item.admin_wallet = admin_wallet
         item.save()
         total_earnings += payment_amount
         total_admin_earnings += admin_wallet
+        total_workers_earnings = sum(
+            item.worker_amount or 0
+            for item in data
+            if item.worker_payment_status == 1
+        )
     context = {
         "data": data,
         "total_earnings": total_earnings,
         "total_admin_earnings": total_admin_earnings,
+        'total_workers_earnings':total_workers_earnings
     }
 
     return render(request, 'admin/paymentDetails.html', context)
+
+
+# views.py
+
+def view_review(request):
+    login_user = request.user
+    appointments = Appointment.objects.filter(
+        user=login_user
+    )
+    user_reg = UserRegistration.objects.get(user=login_user)
+    reviews = Review.objects.filter(user=user_reg)
+    review_map = {}
+    for review in reviews:
+        review_map[review.booking.id] = review
+    for appointment in appointments:
+        if appointment.id in review_map:
+            appointment.has_review = True
+            appointment.review_data = review_map[appointment.id]
+        else:
+            appointment.has_review = False
+    return render(request, 'user/Reviews.html', {'data': appointments})
+
+
+def add_review(request, id):
+    booking = Appointment.objects.get(id=id)
+    user = UserRegistration.objects.get(user=request.user)
+
+    # prevent duplicate review
+    if Review.objects.filter(user=user, booking=booking).exists():
+        return redirect('view_review')
+
+    if request.method == "POST":
+        rating = request.POST.get('rating')
+        review_text = request.POST.get('review')
+
+        Review.objects.create(
+            user=user,
+            worker=booking.worker,
+            booking=booking,
+            rating=rating,
+            review=review_text
+        )
+        messages.info(request, 'Review added')
+        return redirect('review')
+
+    return render(request, 'user/add_reviews.html', {
+        'booking': booking
+    })
+
+
+def rules(request):
+    return render(request, 'rules.html')
+
+
+def admin_view_reviews(request,id):
+    data=Review.objects.filter(id=id)
+    return render(request,'admin/admin_view_reviews.html',{'data':data})
+
+
+def worker_view_reviews(request):
+    worker=WorkerRegistration.objects.get(user=request.user)
+    data=Review.objects.filter(worker=worker)
+    return render(request,'worker/worker_view_reviews.html',{'data':data})
+

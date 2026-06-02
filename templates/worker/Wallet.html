@@ -1,29 +1,88 @@
 {% extends 'worker/worker_dashboard.html' %}
 {% block content %}
-<div class="col-md-12" >
-<table class="table table-hover">
-    <tr>
-        <th>Work Date</th>
-        <th>Work time</th>
-        <th>Your Earnings</th>
-    </tr>
-    {% for i in data %}
-    <tr>
 
-        <td>{{i.availability.date}}</td>
-        <td>{{i.availability.time}}</td>
-        <td>{{i.worker_amount}}</td>
-    </tr>
-    {% endfor %}
-</table>
-<div class="row">
-  <div class="col-md-4  mb-2">
-    <div class="card h-100">
-      <div class="card-body">
-        <h5 class="text-dark">Total Earnings:{{total_earnings}}</h5>
-      </div>
+<div class="container py-4">
+
+    <!-- Top Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-white shadow-sm rounded-4">
+
+        <a href="{% url 'worker_dashboard' %}" class="btn btn-light border rounded-pill px-4">
+            ← Back
+        </a>
+
+        <h5 class="mb-0 fw-bold text-primary">Earnings Overview</h5>
+
+        <div></div>
+
     </div>
-  </div>
+
+    <!-- Table Card -->
+    <div class="card border-0 shadow-lg rounded-4 mb-4">
+
+        <div class="card-body p-4">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle text-center mb-0">
+
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Work Date</th>
+                            <th>Work Time</th>
+                            <th>Your Earnings</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for i in data %}
+                        <tr>
+                            <td class="fw-semibold">{{ i.availability.date }}</td>
+                            <td>{{ i.availability.time }}</td>
+                            <td class="fw-bold text-success">
+                                ₹ {{ i.worker_amount }}
+                            </td>
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-muted py-4">
+                                No earnings found
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="row">
+
+        <div class="col-md-4 mb-2">
+
+            <div class="card border-0 shadow-lg rounded-4 bg-success text-white">
+
+                <div class="card-body text-center py-4">
+
+                    <h6 class="mb-2"> Your Total Earnings</h6>
+
+                    <h3 class="fw-bold mb-0">
+                         {{ total_earnings }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
-</div>
+
 {% endblock %}

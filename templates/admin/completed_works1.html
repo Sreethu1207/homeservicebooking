@@ -1,21 +1,60 @@
 {% extends 'admin/admin_dashboard.html' %}
 {% block content %}
-<div class="row row-cols-1 row-cols-md-1 g-4">
-  {% for i in data %}
-  <div class="col">
-    <div class="card h-100">
-      <div class="card-body">
-        <h5 class="card-title text-primary">{{ i.name }}</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">
-          Category: {{ i.category }}
-        </h6>
-        <p class="card-text">Contact: {{ i.contact }}</p>
-          <a href="{% url 'list_completed_work' i.id%}">
-              <button class="btn btn-primary">Completed Works</button>
-          </a>
-      </div>
+
+<div class="container py-4">
+
+    <!-- Top Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded-4">
+
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-light border rounded-pill px-4">
+            ← Back
+        </a>
+
+        <h5 class="mb-0 fw-bold text-primary">Workers</h5>
+
+        <div></div>
+
     </div>
-  </div>
-  {% endfor %}
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+        {% for i in data %}
+        <div class="col">
+
+            <div class="card h-100 border-0 shadow-lg rounded-4">
+
+                <div class="card-body p-4">
+
+                    <!-- Name -->
+                    <h5 class="fw-bold text-primary mb-1">
+                        {{ i.name }}
+                    </h5>
+
+                    <!-- Category Badge -->
+                    <span class="badge bg-secondary mb-3 px-3 py-2">
+                        {{ i.category }}
+                    </span>
+
+                    <!-- Contact -->
+                    <p class="mb-3 text-muted">
+                        📞 {{ i.contact }}
+                    </p>
+
+                    <!-- Action Button -->
+                    <a href="{% url 'list_completed_work' i.id %}"
+                       class="btn btn-outline-primary w-100 rounded-pill">
+                        View Completed Works
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
 </div>
+
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'worker/worker_dashboard.html' %}
+{% extends 'admin/admin_dashboard.html' %}
 {% block content %}
 
 <div class="container py-4">
@@ -6,13 +6,13 @@
     <!-- Top Bar with Back Button -->
     <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-white shadow-sm rounded-4">
 
-        <a href="{% url 'worker_dashboard' %}" class="btn btn-light border rounded-pill px-4">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-light border rounded-pill px-4">
             ← Back
         </a>
 
-        <h5 class="mb-0 fw-bold text-primary">My Availability</h5>
+        <h5 class="mb-0 fw-bold text-primary">Workers Schedule </h5>
 
-        <div></div>
+
 
     </div>
 
@@ -28,8 +28,8 @@
                         <tr>
                             <th>Date</th>
                             <th>Time</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Name</th>
+                            <th>Approve/Reject</th>
                         </tr>
                     </thead>
 
@@ -38,31 +38,16 @@
                         <tr>
                             <td class="fw-semibold">{{ i.date }}</td>
                             <td>{{ i.time }}</td>
+                            <td>{{i.user.name}}</td>
                             <td>
                                 {% if i.schedule_status == 0 %}
-                                 <p class="text-warning">pending</p>
+                                 <a href="{% url 'workers_schedule_approve' i.id%}"><button class="btn btn-outline-primary ">Approve</button></a>
+                                 <a href="{% url 'workers_schedule_reject' i.id%}"><button class="btn btn-outline-danger">Reject</button></a>
                                 {% elif i.schedule_status == 1 %}
                                 <p class="text-primary">Approved</p>
                                 {% elif i.schedule_status == 2 %}
                                 <p class="text-danger">Reject</p>
                                 {% endif %}
-                            </td>
-                            <td>
-                                {% if i.booking_status == False %}
-                                <a href="{% url 'update_availability' i.id %}"
-                                   class="btn btn-sm btn-outline-primary rounded-pill px-3 me-2">
-                                    Update
-                                </a>
-
-
-                                <a href="{% url 'delete_availability' i.id %}"
-                                   class="btn btn-sm btn-outline-danger rounded-pill px-3">
-                                    Delete
-                                </a>
-                                {% else %}
-                                <p>Slot booked</p>
-                                {% endif %}
-
                             </td>
                         </tr>
                         {% empty %}
@@ -78,11 +63,6 @@
             </div>
 
         </div>
-        {% for message in messages %}
-            <div class="alert alert-primary m-3">
-                {{ message }}
-            </div>
-        {% endfor %}
     </div>
 
 </div>

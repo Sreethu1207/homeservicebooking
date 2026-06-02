@@ -30,7 +30,14 @@
     <!-- Template Stylesheet -->
     <link href=" {% static '/dashboard/css/style.css' %} " rel="stylesheet">
 </head>
+<style>
+@media print {
 
+    .no-print {
+        display: none !important;
+    }
+}
+</style>
 <body>
     <div>
         <!-- Spinner Start -->
@@ -49,10 +56,10 @@
                     <h1 class="m-3 text-primary"><i class="fa fa-building me-3"></i>APEX</h1>
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
-                    <div class="position-relative">
-                        <img class="rounded-circle" src=" {% static '/dashboard/img/user.jpg' %} " alt="" style="width: 40px; height: 40px;">
-                        <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                    </div>
+                   <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center shadow"
+                             style="width: 50px; height: 50px;">
+                            <i class="fa fa-user fa-x text-primary"></i>
+                        </div>
                     <div class="ms-3">
                         <h6 class="mb-0">{{user.username}}</h6>
                         <span>Worker</span>
@@ -70,7 +77,14 @@
                     <a href=" {% url 'worker_view_appointment' %} " class="nav-item nav-link"><i class="fa fa-th me-2"></i>Works</a>
                     <a href=" {% url 'worker_completed_works' %} " class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Completed Works</a>
                     <a href=" {% url 'worker_wallet' %} " class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Your Wallet</a>
-                    <a href=" {% url 'worker_view_complaints' %} " class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Complaints</a>
+                    <a href=" {% url 'worker_view_reviews' %} " class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Reviews & Ratings</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Complaints</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href=" {% url 'worker_add_complaints' %} " class="dropdown-item">Add Complaints</a>
+                            <a href=" {% url 'worker_view_complaints' %} " class="dropdown-item">View Complaints</a>
+                        </div>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -80,46 +94,139 @@
         <!-- Content Start -->
         <div class="content">
             <!-- Navbar Start -->
-            <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
-                <a href="#" class="sidebar-toggler flex-shrink-0">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top px-4 py-2 shadow-sm no-print"
+                style="border-bottom:1px solid #f1f1f1;">
+               <a href="#" class="sidebar-toggler flex-shrink-0">
                     <i class="fa fa-bars"></i>
                 </a>
-<!--                <form class="d-none d-md-flex ms-4">-->
-<!--                    <input class="form-control border-0" type="search" placeholder="Search">-->
-<!--                </form>-->
-                <div class="navbar-nav align-items-center ms-auto">
 
+<!--               <form class="d-none d-md-flex ms-4 flex-grow-1" style="max-width:420px;">-->
+<!--                   <div class="input-group">-->
+<!--                       <span class="input-group-text bg-light border-0">-->
+<!--                           <i class="fa fa-search text-muted"></i>-->
+<!--                       </span>-->
+<!--                       <input type="text" class="form-control bg-light border-0"-->
+<!--                              placeholder="Search services, workers...">-->
+<!--                   </div>-->
+<!--               </form>-->
 
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src=" {% static '/dashboard/img/user.jpg' %} " alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex">{{user.username}}</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="{% url 'worker_profile' %}" class="dropdown-item">My Profile</a>
-                            <a href="{% url 'logout_view' %}" class="dropdown-item">Log Out</a>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+               <!-- Right Side -->
+               <div class="navbar-nav ms-auto d-flex align-items-center gap-3">
+                   <!-- Profile Dropdown -->
+                   <div class="nav-item dropdown">
+                       <a href="#" class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+                          data-bs-toggle="dropdown">
+                           <!-- Avatar Circle -->
+                           <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow"
+                                style="width:38px;height:38px;font-weight:600;">
+                               {{ user.username|first|upper }}
+                           </div>
+                           <span class="d-none d-md-inline fw-semibold text-dark">
+                               {{ user.username }}
+                           </span>
+                       </a>
+                       <!-- Dropdown -->
+                       <div class="dropdown-menu dropdown-menu-end border-0 shadow rounded-3 p-2">
+                           <a href="{% url 'worker_profile' %}" class="dropdown-item rounded-2">
+                               <i class="fa fa-user me-2 text-primary"></i> Profile
+                           </a>
+
+                           <div class="dropdown-divider"></div>
+                           <a href="{% url 'logout_view' %}" class="dropdown-item rounded-2 text-danger">
+                               <i class="fa fa-sign-out-alt me-2"></i> Logout
+                           </a>
+
+                       </div>
+                   </div>
+               </div>
+           </nav>
             <!-- Navbar End -->
-            {% if request.resolver_match.url_name == 'worker_dashboard' %}
-            <div class="card text-center mt-5 mx-3">
-                <div class="card-body bg-primary">
-                    <h3 class="card-title">Welcome Back,{{user.username}}</h3>
-                    <p class="card-text">Ready to take on new jobs today? <br>Check your bookings, manage your availability,
-            and connect with customers</p>
-                    <a href=" {% url 'worker_view_appointment' %}" class="btn btn-light">Works</a>
-                    <a href="  {% url 'view_availability' %}" class="btn btn-light">My Availability</a>
-                </div>
-            </div>
-            {% endif %}
 
+            {% if request.resolver_match.url_name == 'worker_dashboard' %}
+
+<div class="container-fluid pt-4 px-4">
+
+    <!-- HERO SECTION -->
+    <div class="bg-primary text-white rounded-4 p-5 shadow-lg mb-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-3">
+                    Welcome Back, {{ user.username }} 👋
+                </h2>
+
+                <p class="mb-4 fs-5">
+                    Ready to take new jobs today?
+                    Manage your work schedule, track completed tasks,
+                    and grow your earnings efficiently.
+                </p>
+
+                <a href="{% url 'worker_view_appointment' %}"
+                   class="btn btn-light btn-lg me-2">
+                    View Works
+                </a>
+
+                <a href="{% url 'view_availability' %}"
+                   class="btn btn-outline-light btn-lg">
+                    My Availability
+                </a>
+            </div>
+
+            <div class="col-lg-4 text-center">
+                <i class="fa fa-tools"
+                   style="font-size:120px; opacity:0.2;"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="bg-white rounded-4 shadow-sm p-4 text-center">
+                <i class="fa fa-briefcase fa-2x text-primary mb-3"></i>
+                <h6>Total Works</h6>
+                <h3 class="fw-bold">{{ total_works|default:0 }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="bg-white rounded-4 shadow-sm p-4 text-center">
+                <i class="fa fa-check-circle fa-2x text-success mb-3"></i>
+                <h6>Completed</h6>
+                <h3 class="fw-bold">{{ completed_works|default:0 }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="bg-white rounded-4 shadow-sm p-4 text-center">
+                <i class="fa fa-wallet fa-2x text-warning mb-3"></i>
+                <h6>Total Earnings</h6>
+                <h3 class="fw-bold">₹{{ total_earnings }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="bg-white rounded-4 shadow-sm p-4 text-center">
+                <i class="fa fa-star fa-2x text-danger mb-3"></i>
+                <h6>Rating</h6>
+                <h3 class="fw-bold">{{avg_rating|default:0}}</h3>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
             <!-- Sales Chart Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
                     <div class="col-sm-12 col-xl-12">
-                        <div class="bg-light text-center rounded p-4">
+                        <div class="text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 {% block content %}
                                 {% endblock %}
@@ -135,7 +242,7 @@
 
 
         <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top no-print"><i class="bi bi-arrow-up"></i></a>
     </div>
 
     <!-- JavaScript Libraries -->

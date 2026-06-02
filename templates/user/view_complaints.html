@@ -82,6 +82,12 @@
             </div>
 
         </div>
+        {% for message in messages %}
+                    <div class="alert alert-primary m-4 rounded-3 text-center"
+                         role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
 
     </div>
 

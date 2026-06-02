@@ -1,26 +1,101 @@
 {% extends 'user/user_dashboard.html' %}
 {% block content %}
-<div class="col-sm-12 col-xl-12">
-<table class="table table-hover">
-    {% for i in data %}
-    <tr>
-        <th>Name</th>
-        <td>{{i.name}}</td>
-    </tr>
-    <tr>
-        <th>Address</th>
-        <td>{{i.address}}</td>
-    </tr>
-    <tr>
-        <th>Contact</th>
-        <td>{{i.contact}}</td>
-    </tr>
-<!--    <tr><th colspan="2"><a>change Username</a></th></tr>-->
-<!--    <tr><th colspan="2"><a>change Password</a></th></tr>-->
-    {% endfor %}
-</table>
-    <div>
-       <a href="{% url 'update_user_profile' %}"><button class="btn btn-primary">Update</button></a>
+
+<div class="container mt-4">
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{% url 'user_dashboard' %}"
+           class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+            ← Back
+        </a>
     </div>
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <!-- Profile Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Header -->
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0">
+                        My Profile
+                    </h3>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-4">
+
+                    {% for i in data %}
+
+                    <!-- Profile Image -->
+                    <div class="text-center mb-4">
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center shadow"
+                             style="width: 100px; height: 100px;">
+                            <i class="fa fa-user fa-3x text-primary"></i>
+                        </div>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="table-responsive">
+
+                        <table class="table table-borderless align-middle">
+
+                            <tr class="border-bottom">
+                                <th width="30%" class="py-3">
+                                    <i class="fa fa-user text-primary me-2"></i>
+                                    Name
+                                </th>
+                                <td class="py-3">
+                                    {{ i.name }}
+                                </td>
+                            </tr>
+
+                            <tr class="border-bottom">
+                                <th class="py-3">
+                                    <i class="fa fa-map-marker-alt text-primary me-2"></i>
+                                    Address
+                                </th>
+                                <td class="py-3">
+                                    {{ i.address }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th class="py-3">
+                                    <i class="fa fa-phone text-primary me-2"></i>
+                                    Contact
+                                </th>
+                                <td class="py-3">
+                                    {{ i.contact }}
+                                </td>
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                    {% endfor %}
+
+                    <!-- Update Button -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'update_user_profile' %}">
+                            <button class="btn btn-primary rounded-pill px-5 py-2 shadow-sm">
+                                Update Profile
+                            </button>
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}

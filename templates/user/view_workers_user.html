@@ -3,11 +3,20 @@
 
 <div class="container mt-4">
 
-    <!-- Back Button -->
-    <div class="mb-4">
-        <a href="{% url 'user_dashboard' %}" class="btn btn-outline-primary rounded-pill px-4">
-            ← Back
+    <!-- HEADER -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+
+        <a href="{% url 'user_dashboard' %}"
+           class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm">
+            <i class="fa fa-arrow-left me-1"></i> Back
         </a>
+
+        <h4 class="fw-bold text-primary mb-0">
+            Available Workers
+        </h4>
+
+        <div style="width:90px;"></div>
+
     </div>
 
     {% if data %}
@@ -19,73 +28,102 @@
 
             <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden">
 
-                <!-- Image -->
-                <img src="{{ i.image.url }}"
-                     class="card-img-top"
-                     alt="image"
-                     style="height: 250px; object-fit: cover;">
+                <!-- IMAGE -->
+                <div style="height:250px; overflow:hidden;">
+                    <img src="{{ i.image.url }}"
+                         class="w-100 h-100"
+                         style="object-fit: cover;">
+                </div>
 
-                <!-- Body -->
-                <div class="card-body d-flex flex-column">
+                <!-- BODY -->
+                <div class="card-body d-flex flex-column p-4">
 
-                    <h4 class="card-title text-primary fw-bold mb-3">
+                    <!-- NAME -->
+                    <h4 class="fw-bold text-primary mb-2">
                         {{ i.name }}
                     </h4>
 
-                    <div class="mb-2">
-                            {{ i.category }}
-                    </div>
+                    <!-- CATEGORY BADGE -->
+                    <span class="badge bg-light text-primary border border-primary mb-3 p-2 w-fit">
+                        {{ i.category }}
+                    </span>
 
-                    <p class="card-text mb-2">
-                        <strong>Address:</strong>
+
+                    <!-- DETAILS -->
+                    <p class="mb-1 text-muted">
+                        <i class="fa fa-map-marker-alt text-danger me-1"></i>
                         {{ i.address }}
                     </p>
 
-                    <p class="card-text mb-2">
-                        <strong>Contact:</strong>
+                    <p class="mb-1 text-muted">
+                        <i class="fa fa-phone text-success me-1"></i>
                         {{ i.contact }}
                     </p>
 
-                    <p class="card-text mb-3">
-                        <strong>Experience:</strong>
-                        {{ i.experience }}
+                    <p class="mb-3 text-muted">
+                        <i class="fa fa-briefcase text-warning me-1"></i>
+                        {{ i.experience }} experience
                     </p>
 
+                    <!-- PAYMENT / STATUS -->
                     {% if i.payment == None %}
 
-                    <button class="btn btn-secondary mt-auto rounded-pill" disabled>
-                        Not Available Now
-                    </button>
+                        <button class="btn btn-secondary mt-auto rounded-pill w-100" disabled>
+                            Not Available Now
+                        </button>
 
                     {% else %}
 
+                        <div class="mb-3">
+                            <span class="fw-semibold">Payment:</span>
+                            <span class="text-success fw-bold">{{ i.payment }}</span>
+                        </div>
                     <div class="mb-3">
-                            payment: {{ i.payment }}
+                        {% if i.avg_rating %}
+                        <div>
+                            <span class="text-warning me-2">
+                                ⭐ {{ i.avg_rating|floatformat:1 }}
+                            </span>
+                            <small class="text-muted">
+                                ({{ i.total_reviews }} reviews)
+                            </small>
+                        </div>
+                        {% else %}
+                        <small class="text-muted">
+                            No ratings yet
+                        </small>
+                        {% endif %}
+
                     </div>
 
-                    <a href="{% url 'view_worker_availability' i.id %}"
-                       class="btn btn-primary mt-auto rounded-pill">
-                        Check Availability
-                    </a>
-
+                        <a href="{% url 'view_worker_availability' i.id %}"
+                           class="btn btn-primary mt-auto rounded-pill w-100 shadow-sm">
+                            Check Availability
+                        </a>
                     {% endif %}
-
                 </div>
-
             </div>
-
         </div>
+
         {% endfor %}
 
     </div>
 
     {% else %}
 
+    <!-- EMPTY STATE -->
     <div class="text-center mt-5">
-        <div class="card shadow-sm border-0 p-5 rounded-4">
-            <h3 class="text-muted">
-                No Workers Available
-            </h3>
+        <div class="card border-0 shadow-sm p-5 rounded-4">
+
+            <div class="mb-3">
+                <i class="fa fa-user-slash fa-3x text-muted"></i>
+            </div>
+
+            <h4 class="text-muted">No Workers Available</h4>
+            <p class="text-muted mb-0">
+                Try selecting another service category.
+            </p>
+
         </div>
     </div>
 

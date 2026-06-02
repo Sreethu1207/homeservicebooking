@@ -1,38 +1,93 @@
 {% extends 'admin/admin_dashboard.html' %}
 {% block content %}
 
-{% if data %}
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  {% for i in data %}
-  <div class="col">
-    <div class="card h-100">
-      <img src="{{ i.image.url }}" class="card-img-top" alt="image">
+<div class="container py-4">
 
-      <div class="card-body">
-        <h5 class="card-title text-primary">{{ i.name }}</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">
-          Category: {{ i.category }}
-        </h6>
-        <p class="card-text">Address: {{ i.address }}</p>
-        <p class="card-text">Contact: {{ i.contact }}</p>
-        <p class="card-text">Experience: {{ i.experience }}</p>
-        {% if i.payment == None %}
-        <a href="#">
-          <button class="btn btn-primary">Not Available Now</button>
+    <!-- Top Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-white shadow-sm rounded-4">
+
+        <a href="{% url 'category_view' %}" class="btn btn-light border rounded-pill px-4">
+            ← Back
         </a>
-        {% else %}
-        <p class="card-text">Payment: {{ i.payment }}</p>
-        <a href="{% url 'view_worker_availability' i.id %}">
-          <button class="btn btn-primary">Check Availability</button>
-        </a>
-        {% endif %}
-      </div>
+
+        <h5 class="mb-0 fw-bold text-primary">Workers Directory</h5>
+
+        <div></div>
+
     </div>
-  </div>
-  {% endfor %}
-  </div>
-{% else %}
-  <div><p>No Workers Available</p></div>
-  {% endif %}
+
+    {% if data %}
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+        {% for i in data %}
+        <div class="col">
+
+            <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Image -->
+                <img src="{{ i.image.url }}"
+                     class="card-img-top"
+                     style="height:220px; object-fit:cover;"
+                     alt="image">
+
+                <div class="card-body p-4">
+
+                    <!-- Name -->
+                    <h5 class="fw-bold text-primary mb-1">
+                        {{ i.name }}
+                    </h5>
+
+                    <!-- Category -->
+                    <span class="badge bg-secondary mb-3 px-3 py-2">
+                        {{ i.category }}
+                    </span>
+
+                    <!-- Details -->
+                    <p class="mb-1 text-muted"> {{ i.address }}</p>
+                    <p class="mb-1 text-muted"> {{ i.contact }}</p>
+                    <p class="mb-3 text-muted"> {{ i.experience }} experience</p>
+
+                    <!-- Payment logic -->
+                    {% if i.payment == None %}
+
+                        <button class="btn btn-outline-secondary w-100 rounded-pill" disabled>
+                            Not Available Now
+                        </button>
+
+                    {% else %}
+
+                        <div class="mb-2">
+                            <span class="fw-bold text-success">
+                                 {{ i.payment }}
+                            </span>
+
+                        </div>
+
+                        <a href="{% url 'view_worker_availability' i.id %}"
+                           class="btn btn-primary w-100 rounded-pill">
+                            Check Availability
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="text-center mt-5">
+        <h5 class="text-muted">No Workers Available</h5>
+    </div>
+
+    {% endif %}
+
+</div>
 
 {% endblock %}
