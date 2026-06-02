@@ -62,8 +62,8 @@ urlpatterns = [
     path('add-review/<int:id>/', views.add_review, name='add_review'),
     path('rules/', views.rules, name='rules'),
     path('workers_schedule', views.workers_schedule, name='workers_schedule'),
-    path('workers_schedule_approve/<int:id>/', views.workers_schedule_approve, name='workers_schedule_approve'),
-    path('workers_schedule_reject/<int:id>/', views.workers_schedule_reject, name='workers_schedule_reject'),
+    # path('workers_schedule_approve/<int:id>/', views.workers_schedule_approve, name='workers_schedule_approve'),
+    # path('workers_schedule_reject/<int:id>/', views.workers_schedule_reject, name='workers_schedule_reject'),
     path('admin_view_reviews/<int:id>/', views.admin_view_reviews, name='admin_view_reviews'),
     path('worker_view_reviews', views.worker_view_reviews, name='worker_view_reviews'),
 

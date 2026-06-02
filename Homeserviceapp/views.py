@@ -250,18 +250,18 @@ def workers_schedule(request):
     return render(request, 'admin/workers_schedule.html', {'data': data})
 
 
-def workers_schedule_approve(request, id):
-    data = Availability.objects.get(id=id)
-    data.schedule_status = 1
-    data.save()
-    return redirect('workers_schedule')
+# def workers_schedule_approve(request, id):
+#     data = Availability.objects.get(id=id)
+#     data.schedule_status = 1
+#     data.save()
+#     return redirect('workers_schedule')
 
 
-def workers_schedule_reject(request, id):
-    data = Availability.objects.get(id=id)
-    data.schedule_status = 2
-    data.save()
-    return redirect('workers_schedule')
+# def workers_schedule_reject(request, id):
+#     data = Availability.objects.get(id=id)
+#     data.schedule_status = 2
+#     data.save()
+#     return redirect('workers_schedule')
 
 
 def view_availability_user(request, id):
@@ -340,14 +340,14 @@ def approve_appointment(request, id):
     data = Appointment.objects.get(id=id)
     data.appointment_status = 1
     data.save()
-    return redirect('user_view_appointment')
+    return redirect('worker_view_appointment')
 
 
 def reject_appointment(request, id):
     data = Appointment.objects.get(id=id)
     data.appointment_status = 2
     data.save()
-    return redirect('user_view_appointment')
+    return redirect('worker_view_appointment')
 
 
 @login_required

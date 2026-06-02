@@ -29,7 +29,6 @@
                             <th>Date</th>
                             <th>Time</th>
                             <th>Name</th>
-                            <th>Approve/Reject</th>
                         </tr>
                     </thead>
 
@@ -39,16 +38,7 @@
                             <td class="fw-semibold">{{ i.date }}</td>
                             <td>{{ i.time }}</td>
                             <td>{{i.user.name}}</td>
-                            <td>
-                                {% if i.schedule_status == 0 %}
-                                 <a href="{% url 'workers_schedule_approve' i.id%}"><button class="btn btn-outline-primary ">Approve</button></a>
-                                 <a href="{% url 'workers_schedule_reject' i.id%}"><button class="btn btn-outline-danger">Reject</button></a>
-                                {% elif i.schedule_status == 1 %}
-                                <p class="text-primary">Approved</p>
-                                {% elif i.schedule_status == 2 %}
-                                <p class="text-danger">Reject</p>
-                                {% endif %}
-                            </td>
+
                         </tr>
                         {% empty %}
                         <tr>

@@ -53,17 +53,41 @@
                                 {{ i.worker.payment }}
                             </td>
 
-                            <!-- Work Status -->
+                             <!-- STATUS -->
                             <td>
-                                {% if i.appointment_status == 1 %}
-                                {% if i.work_status == False %}
-                                    <p>Pending</p>
-                                {% else %}
-                                <p class="text-success">Work completed</p>
 
+                                {% if i.appointment_status == 0 %}
+
+                                    <a href="{% url 'approve_appointment' i.id %}"
+                                       class="btn btn-sm btn-success rounded-pill px-3 mb-1">
+                                        Approve
+                                    </a>
+
+                                    <a href="{% url 'reject_appointment' i.id %}"
+                                       class="btn btn-sm btn-danger rounded-pill px-3">
+                                        Reject
+                                    </a>
+
+                                {% elif i.appointment_status == 1 %}
+
+                                    {% if i.work_status == True %}
+                                        <span class="text-success px-3 py-2 rounded-pill">
+                                            Work Completed
+                                        </span>
+                                    {% else %}
+                                        <span class="text-primary px-3 py-2 rounded-pill">
+                                            Approved
+                                        </span>
+                                    {% endif %}
+
+                                {% elif i.appointment_status == 2 %}
+                                    <span class="text-danger px-3 py-2 rounded-pill">
+                                        Rejected
+                                    </span>
                                 {% endif %}
-                                {% endif %}
+
                             </td>
+
 
                             <!-- Payment Status -->
                             <td>
