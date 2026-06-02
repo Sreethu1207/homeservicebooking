@@ -53,27 +53,9 @@
                     </p>
 
                     <!-- Payment -->
-                    <div class="mb-3">
-
-                        {% if i.payment == None %}
-                            <a href="{% url 'payment_add' i.id %}"
-                               class="btn btn-success btn-sm w-100 rounded-pill">
-                                Add Payment
-                            </a>
-
-                        {% else %}
-                            <span class="text-success mb-2">
-                                Payment: {{ i.payment }}
-                            </span>
-
-                            <a href="{% url 'payment_add' i.id %}"
-                               class="btn btn-primary btn-sm w-100 rounded-pill">
-                                Update Payment
-                            </a>
-                        {% endif %}
-
-                    </div>
-
+                    <p class="mb-3 text-success">
+                        <strong>Payment:</strong> <i class="fa-solid fa-dollar-sign"></i>{{ i.payment}}
+                    </p>
                     <!-- Delete -->
                     <a href="{% url 'worker_delete' i.id %}"
                        class="btn btn-outline-danger btn-sm rounded-pill w-100">

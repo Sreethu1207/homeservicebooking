@@ -22,20 +22,20 @@
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
                 <h6 class="text-muted">Total Booking Earnings</h6>
-                <h3 class="fw-bold text-success">{{ total_earnings }}</h3>
+                <h3 class="fw-bold text-success"><i class="fa-solid fa-dollar-sign"></i>{{ total_earnings }}</h3>
             </div>
         </div>
 
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
                 <h6 class="text-muted">Admin Wallet</h6>
-                <h3 class="fw-bold text-primary">{{ total_admin_earnings }}</h3>
+                <h3 class="fw-bold text-primary"><i class="fa-solid fa-dollar-sign"></i>{{ total_admin_earnings }}</h3>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
                 <h6 class="text-muted">Total Workers earnings</h6>
-                <h3 class="fw-bold text-primary">{{ total_workers_earnings}}</h3>
+                <h3 class="fw-bold text-primary"><i class="fa-solid fa-dollar-sign"></i>{{ total_workers_earnings}}</h3>
             </div>
         </div>
 
@@ -70,18 +70,18 @@
                             <td>{{ i.availability.time }}</td>
 
                             <td class="fw-bold text-success">
-                                {{ i.worker.payment }}
+                                <i class="fa-solid fa-dollar-sign"></i>{{ i.worker.payment }}
                             </td>
 
                             <td class="fw-bold text-primary">
-                                {{ i.worker_amount }}<br>
+                                <i class="fa-solid fa-dollar-sign"></i>{{ i.worker_amount }}<br>
                                 {% if i.worker_payment_status == 0 %}
                                 <p class="text-warning">[pending]</p>
                                 {% endif %}
                             </td>
 
                             <td class="fw-bold text-dark">
-                                {{ i.admin_wallet }}
+                                <i class="fa-solid fa-dollar-sign"></i>{{ i.admin_wallet }}
                             </td>
 
                         </tr>

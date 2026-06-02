@@ -22,7 +22,7 @@
         <div class="col-md-6">
             <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
                 <h6 class="text-muted">Total Earnings</h6>
-                <h4 class="fw-bold text-success">{{ total_earnings|default:0 }}</h4>
+                <h4 class="fw-bold text-success"><i class="fa-solid fa-dollar-sign"></i>{{ total_earnings|default:0 }}</h4>
             </div>
         </div>
 
@@ -59,7 +59,7 @@
                     <!-- Payment Info -->
                     <p class="mb-1">
                         <strong>Worker Earnings:</strong>
-                        <span class="text-success fw-bold">{{ i.worker_amount }}</span>
+                        <span class="text-success fw-bold"><i class="fa-solid fa-dollar-sign"></i>{{ i.worker_amount }}</span>
                     </p>
 
                     <p class="mb-2">

@@ -74,7 +74,7 @@
 
                             <td>
                                 <span class="fw-bold text-success">
-                                    ₹{{ i.worker.payment }}
+                                    <i class="fa-solid fa-dollar-sign"></i>{{ i.worker.payment }}
                                 </span>
                             </td>
 
@@ -92,10 +92,10 @@
                                             Pending
                                         </span>
 
-                                    {% elif i.availability.booking_status == 2 %}
-                                        <span class="badge bg-danger px-3 py-2">
-                                            Cancelled
-                                        </span>
+<!--                                    {% elif i.availability.booking_status == 2 %}-->
+<!--                                        <span class="badge bg-danger px-3 py-2">-->
+<!--                                            Cancelled-->
+<!--                                        </span>-->
                                     {% endif %}
 
                                 {% elif i.appointment_status == 1 %}
@@ -133,11 +133,11 @@
                                             Cancel
                                         </a>
 
-                                    {% elif i.availability.booking_status == 2 %}
+<!--                                    {% elif i.availability.booking_status == 2 %}-->
 
-                                        <span class="text-danger fw-semibold">
-                                            Booking Cancelled
-                                        </span>
+<!--                                        <span class="text-danger fw-semibold">-->
+<!--                                            Booking Cancelled-->
+<!--                                        </span>-->
 
                                     {% endif %}
 

@@ -193,16 +193,6 @@ def worker_delete(request, id):
     return redirect('view_workers_admin')
 
 
-def update_payment(request, id):
-    data = WorkerRegistration.objects.get(id=id)
-    if request.method == 'POST':
-        p = request.POST.get('payment')
-        data.payment = p
-        data.save()
-        messages.info(request, 'Payment added')
-        return redirect('view_workers_admin')
-    return render(request, 'admin/add_payment.html', {'data': data})
-
 
 def add_availability(request):
     form = AvailabilityForm()

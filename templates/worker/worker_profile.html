@@ -55,6 +55,14 @@
                         <th class="text-muted">Contact</th>
                         <td>{{ i.contact }}</td>
                     </tr>
+                    <tr>
+                        <th class="text-muted">Payment</th>
+                        {% if i.payment == None %}
+                        <td><p>Update your payment details</p></td>
+                        {% else %}
+                        <td><i class="fa-solid fa-dollar-sign"></i>{{ i.payment }}</td>
+                        {% endif %}
+                    </tr>
 
                     <tr>
                         <th class="text-muted">PayPal Email</th>
