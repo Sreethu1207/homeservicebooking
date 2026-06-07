@@ -257,7 +257,7 @@ def workers_schedule(request):
 def view_availability_user(request, id):
     today = timezone.now().date()
     worker = WorkerRegistration.objects.get(id=id)
-    data = Availability.objects.filter(user=worker, schedule_status=1, date__gte=today).order_by('date', 'time')
+    data = Availability.objects.filter(user=worker,date__gte=today).order_by('date', 'time')
     return render(request, 'user/view_worker_availability.html', {'data': data})
 
 
@@ -600,18 +600,18 @@ def payment_cancel(request, id):
 
 
 def payment_details(request, id):
-    data = Payment.objects.get(id=id)
+    data = Payment.objects.get(booking_id=id)
 
     return render(request, 'user/payment.html', {'data': data})
 
 
 def admin_payment_details(request, id):
-    data = Payment.objects.get(id=id)
+    data = Payment.objects.get(booking_id=id)
     return render(request, 'admin/admin_payment.html', {'data': data})
 
 
 def worker_payment_details(request, id):
-    data = Payment.objects.get(id=id)
+    data = Payment.objects.get(booking_id=id)
     return render(request, 'worker/worker_payment.html', {'data': data})
 
 

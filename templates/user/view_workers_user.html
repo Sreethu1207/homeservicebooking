@@ -51,7 +51,7 @@
                         {{ i.name }}
                     </h4>
 
-                    <span class="badge bg-light text-primary border border-primary mb-3 align-self-start">
+                    <span class="badge bg-light text-primary border border-primary mb-3 align-self-center">
                         {{ i.category }}
                     </span>
 
@@ -85,7 +85,7 @@
                                 ⭐ {{ i.avg_rating|floatformat:1 }}
                             </span>
                             <small class="text-muted">
-                                ({{ i.total_reviews }} reviews)
+                                <a href="">({{ i.total_reviews }} reviews)</a>
                             </small>
                         {% else %}
                             <small class="text-muted">

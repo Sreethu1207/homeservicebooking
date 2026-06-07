@@ -1,91 +1,106 @@
 {% extends 'user/user_dashboard.html' %}
 {% block content %}
 
-<div class="container mt-4">
+<div class="container py-4">
 
-    <!-- Back Button -->
-    <div class="mb-4">
-        <a href="{% url 'view_workers_user' %}"
-           class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
-            ← Back
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{% url 'view_workers_user' %}" class="btn btn-outline-primary rounded-pill">
+            <i class="fa-solid fa-arrow-left"></i> Back
         </a>
+
+        <h3 class="fw-bold text-primary mb-0">
+            <i class="fa-solid fa-calendar-days"></i>
+            Worker Availability
+        </h3>
     </div>
 
-    <!-- Messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
+    {% regroup data by date as date_list %}
 
-    <!-- Availability Card -->
-    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+    {% for day in date_list %}
 
-        <!-- Header -->
-        <div class="card-header bg-primary text-white py-3">
-            <h4 class="mb-0 text-center">
-                Worker Availability
-            </h4>
-        </div>
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
 
-        <!-- Table -->
-        <div class="card-body p-4">
+        <div class="card-header bg-primary text-white">
 
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
+            <h5 class="mb-0">
 
-                    <thead class="table-light">
-                        <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th class="text-center">Status</th>
-                        </tr>
-                    </thead>
+                <i class="fa-solid fa-calendar-day"></i>
 
-                    <tbody>
+                {{ day.grouper }}
 
-                        {% for i in data %}
-                        <tr>
-                            <td><strong>{{ i.date }}</strong></td>
-                            <td>{{ i.time }}</td>
-
-                            <td class="text-center">
-
-                                {% if i.booking_status == 0 or i.booking_status == 2 %}
-                                    <a href="{% url 'book_appointment' i.id %}"
-                                       class="btn btn-danger rounded-pill px-4">
-                                        Book Now
-                                    </a>
-
-                                {% elif i.booking_status == 1 %}
-                                    <span class="badge bg-success px-4 py-2 fs-6">
-                                        Booked
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-                        </tr>
-
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="text-center text-muted">
-                                No availability found.
-                            </td>
-                        </tr>
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-            </div>
+            </h5>
 
         </div>
 
+        <div class="card-body">
+
+            {% for slot in day.list %}
+
+            <div class="d-flex justify-content-between align-items-center border rounded-3 p-3 mb-3">
+
+                <div>
+
+                    <h6 class="mb-1">
+                        <i class="fa-solid fa-clock text-primary"></i>
+                        {{ slot.time }}
+                    </h6>
+
+                    {% if slot.booking_status == 1 %}
+
+                        <span class="badge bg-danger">
+                            Already Booked
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-success">
+                            Available
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+                <div>
+
+                    {% if slot.booking_status == 0 or slot.booking_status == 2 %}
+
+                        <a href="{% url 'book_appointment' slot.id %}"
+                           class="btn btn-success rounded-pill px-4">
+
+                            Book Now
+
+                        </a>
+
+                    {% else %}
+
+                        <button class="btn btn-secondary rounded-pill px-4" disabled>
+
+                            Not Available
+
+                        </button>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
     </div>
+
+    {% empty %}
+
+    <div class="alert alert-info text-center">
+
+        No availability found.
+
+    </div>
+
+    {% endfor %}
 
 </div>
 
